@@ -235,12 +235,12 @@ rrplot <- function(x, logscale = FALSE,
   claim <- attr(x, "claim")
   subtitle <- sprintf("Decl: %s - Excl: %s - Claim: %s", decl, excl, claim)
   scales <- match.arg(scales)
-  x$label <- sprintf("%.2f\n(%s)", x$rr, x$tp)
+  x$label <- sprintf("%s\n%.2f\n(%s)", ifelse(!x$reject == 1, "N.E.", "") , x$rr, x$tp)
   if (logscale) {
     x$rr <- log(x$rr)
     title <- paste(title, "(log scale)")
   }
-  ymax <- max(x$rr, na.rm = TRUE) * 1.2
+  ymax <- max(x$rr, na.rm = TRUE) * 1.3
   label <- rr <- NULL
   if (jaid::has_cols(x, c("gender", "age_band")))
     return(

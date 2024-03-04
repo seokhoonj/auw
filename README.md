@@ -17,4 +17,3 @@ devtools::install_github("seokhoonj/auw")
 ``` r
 library(auw)
 ```
-
