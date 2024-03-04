@@ -1,0 +1,28 @@
+Package: auw
+Title: Actuarial Underwriting
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Seokhoon", family = "Joo", role = c("aut", "cre"),
+           email = "seokhoonj@gmail.com")
+Description: Loss ratio simulations considering both an actuarial perspective and 
+             an underwriting perspective.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.5.0)
+Remotes:
+  github::seokhoonj/ggshort,
+  github::seokhoonj/jaid
+Imports:
+  data.table (>= 1.14.2),
+  ggplot2 (>= 3.3.3),
+  ggshort (>= 0.0.0.9001),
+  jaid (>= 0.0.0.9000),
+  rlang (>= 1.1.1),
+  scales (>= 1.3.0),
+  stringi (>= 1.8.3)
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
