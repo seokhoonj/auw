@@ -96,6 +96,7 @@ irplot <- function(x, color_type = c("base", "deep"),
   claim <- attr(x, "claim")
   subtitle <- sprintf("Decl: %s - Excl: %s - Claim: %s", decl, excl, claim)
   dt <- x[x$excl == 0 & x$claim == 1,]
+  # dt$label <- sprintf("%.2f (%s)", dt$ratio * 100, scales::comma(dt$n))
   scales <- match.arg(scales)
   color_type <- match.arg(color_type)
   is_pair <- length(levels(dt$decl)) == 2
@@ -108,7 +109,7 @@ irplot <- function(x, color_type = c("base", "deep"),
         ) +
         facet_wrap(~ gender) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, x.angle = 90)
+        ggshort_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (jaid::has_cols(dt, "gender") & !jaid::has_cols(dt, "age_band"))
     return(
@@ -117,7 +118,7 @@ irplot <- function(x, color_type = c("base", "deep"),
           scale_pair_fill_manual(dt$decl, color_type = color_type)
         ) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme)
+        ggshort_theme(theme = theme, y.size = 0)
     )
   if (!jaid::has_cols(dt, "gender") & jaid::has_cols(dt, "age_band"))
     return(
@@ -126,7 +127,7 @@ irplot <- function(x, color_type = c("base", "deep"),
           scale_pair_fill_manual(dt$decl, color_type = color_type)
         ) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, x.angle = 90)
+        ggshort_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (!jaid::has_cols(dt, "gender") & !jaid::has_cols(dt, "age_band"))
     return(
@@ -135,7 +136,7 @@ irplot <- function(x, color_type = c("base", "deep"),
           scale_pair_fill_manual(dt$decl, color_type = color_type)
         ) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme)
+        ggshort_theme(theme = theme, y.size = 0)
     )
 }
 
@@ -248,28 +249,28 @@ rrplot <- function(x, logscale = FALSE,
             label_size = 3, label_vjust = -.25) +
         facet_wrap(~ gender, scales = scales) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, x.angle = 90, y.size = .1)
+        ggshort_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (jaid::has_cols(x, "gender") & !jaid::has_cols(x, "age_band"))
     return(
       ggbar(data = x, x = gender, y = rr, ymax = ymax, label = label,
             label_size = 3, label_vjust = -.25) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, y.size = .1)
+        ggshort_theme(theme = theme, y.size = 0)
     )
   if (!jaid::has_cols(x, "gender") & jaid::has_cols(x, "age_band"))
     return(
       ggbar(data = x, x = age_band, y = rr, ymax = ymax, label = label,
             label_size = 3, label_vjust = -.25) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, x.angle = 90, y.size = .1)
+        ggshort_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (!jaid::has_cols(x, "gender") & !jaid::has_cols(x, "age_band"))
     return(
       ggbar(data = x, x = "cohort data", y = rr, ymax = ymax, label = label,
             label_size = 3, label_vjust = -.25) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, y.size = .1)
+        ggshort_theme(theme = theme, y.size = 0)
     )
 }
 
