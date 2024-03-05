@@ -99,7 +99,7 @@ irplot <- function(x, color_type = c("base", "deep"),
   # dt$label <- sprintf("%.2f (%s)", dt$ratio * 100, scales::comma(dt$n))
   scales <- match.arg(scales)
   color_type <- match.arg(color_type)
-  is_pair <- length(levels(dt$decl)) == 2
+  is_pair <- length(levels(dt$decl)) <= 2
   ratio <- NULL
   if (jaid::has_cols(dt, c("gender", "age_band")))
     return(
