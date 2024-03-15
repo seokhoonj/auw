@@ -27,7 +27,7 @@ subset_id_with_kcd(
 
 \item{to_var}{a name of end date variable}
 
-\item{udate}{a string date underwritten}
+\item{udate}{a date underwritten}
 
 \item{start}{xx months before udate (negative numeric)}
 

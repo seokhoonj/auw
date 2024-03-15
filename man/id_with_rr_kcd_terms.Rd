@@ -2,7 +2,7 @@
 % Please edit documentation in R/rr.R
 \name{id_with_rr_kcd_terms}
 \alias{id_with_rr_kcd_terms}
-\title{id with kcd terms for 'Relative Risk'}
+\title{id with "relative risk" kcd terms}
 \usage{
 id_with_rr_kcd_terms(
   df,
@@ -51,11 +51,18 @@ Subset cohort data using underwriting date and kcd code
 \examples{
 # id with kcd terms for 'Relative Risk'
 \dontrun{
-id_with_kcd_terms(cohort, id, list(age_band), kcd, sdate, edate, udate,
-                  decl1 = list(-60,  0, "I10"),
-                  decl2 = list(-60,  0, "E78"),
-                  decl3 = list(-60,  0, "E1[0-4]"),
-                  excl  = list(-60,  0, "I2[0-5]|I6[0-9]|G46"),
-                  claim = list(  0, 36, "I2[0-5]|I6[0-9]|G46"))}
+id_with_rr_kcd_terms(
+  df = cohort,
+  id_group_var = .(id, gender, age_band),
+  kcd_var = kcd,
+  from_var = sdate,
+  to_var = edate,
+  udate = udate,
+  decl1 = list(-60,  0, "I10"),
+  decl2 = list(-60,  0, "E78"),
+  decl3 = list(-60,  0, "E1[0-4]"),
+  excl  = list(-60,  0, "I2[0-5]|I6[0-9]|G46"),
+  claim = list(  0, 36, "I2[0-5]|I6[0-9]|G46")
+)}
 
 }

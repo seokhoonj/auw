@@ -1,4 +1,4 @@
-#' id with kcd terms for 'Relative Risk'
+#' id with "relative risk" kcd terms
 #'
 #' Whether the ids have KCD codes that exists before or after a specific point
 #' in time
@@ -22,12 +22,19 @@
 #' @examples
 #' # id with kcd terms for 'Relative Risk'
 #' \dontrun{
-#' id_with_kcd_terms(cohort, id, list(age_band), kcd, sdate, edate, udate,
-#'                   decl1 = list(-60,  0, "I10"),
-#'                   decl2 = list(-60,  0, "E78"),
-#'                   decl3 = list(-60,  0, "E1[0-4]"),
-#'                   excl  = list(-60,  0, "I2[0-5]|I6[0-9]|G46"),
-#'                   claim = list(  0, 36, "I2[0-5]|I6[0-9]|G46"))}
+#' id_with_rr_kcd_terms(
+#'   df = cohort,
+#'   id_group_var = .(id, gender, age_band),
+#'   kcd_var = kcd,
+#'   from_var = sdate,
+#'   to_var = edate,
+#'   udate = udate,
+#'   decl1 = list(-60,  0, "I10"),
+#'   decl2 = list(-60,  0, "E78"),
+#'   decl3 = list(-60,  0, "E1[0-4]"),
+#'   excl  = list(-60,  0, "I2[0-5]|I6[0-9]|G46"),
+#'   claim = list(  0, 36, "I2[0-5]|I6[0-9]|G46")
+#' )}
 #'
 #' @export
 id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
@@ -52,13 +59,13 @@ id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
   smry$decl <- as.factor(smry$decl)
   rm_cols(smry, !!decl_cols)
   data.table::setcolorder(smry, "decl", before = "excl")
-  data.table::setattr(smry, "class", c("ir", old_class))
+  jaid::set_attr(smry, "class", c("ir", old_class))
   decl <- list(decl1[[3L]], decl2[[3L]], decl3[[3L]])
   decl <- decl[sapply(decl, function(x) !is.null(x))]
-  data.table::setattr(smry, "decl", paste(decl, collapse = " & "))
-  data.table::setattr(smry, "excl", excl[[3L]])
-  data.table::setattr(smry, "claim", claim[[3L]])
-  data.table::setattr(dt, "summary", smry)
+  jaid::set_attr(smry, "decl", paste(decl, collapse = " & "))
+  jaid::set_attr(smry, "excl", excl[[3L]])
+  jaid::set_attr(smry, "claim", claim[[3L]])
+  jaid::set_attr(dt, "summary", smry)
   return(dt)
 }
 
@@ -203,10 +210,10 @@ get_rel_risk <- function(x, decl_vs = c("0", "1"), threshold = .975) {
   ds[, `:=`(or, (tp / fp) / (fn / tn))]
   ds$pvalue <- pvalue
   ds$reject <- factor(ifelse(pvalue < (1 - threshold), 1, 0), levels = c(0, 1))
-  data.table::setattr(ds, "decl" , attr(x, "decl"))
-  data.table::setattr(ds, "excl" , attr(x, "excl"))
-  data.table::setattr(ds, "claim", attr(x, "claim"))
-  data.table::setattr(ds, "class", c("rr", old_class[old_class != "ir"]))
+  jaid::set_attr(ds, "decl" , attr(x, "decl"))
+  jaid::set_attr(ds, "excl" , attr(x, "excl"))
+  jaid::set_attr(ds, "claim", attr(x, "claim"))
+  jaid::set_attr(ds, "class", c("rr", old_class[old_class != "ir"]))
   return(ds)
 }
 

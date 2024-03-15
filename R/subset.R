@@ -7,7 +7,7 @@
 #' @param kcd_var a name of kcd variable
 #' @param from_var a name of start date variable
 #' @param to_var a name of end date variable
-#' @param udate a string date underwritten
+#' @param udate a date underwritten
 #' @param start xx months before udate (negative numeric)
 #' @param end xx months after udate (positive numeric)
 #' @param ... kcd codes
@@ -29,8 +29,8 @@ subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
   for (i in seq_along(dots)) {
     fdate <- jaid::add_mon(udate, start)
     tdate <- jaid::add_mon(udate, end)
-    key <- pull_string("^!", dots[[i]])
-    diz <- remv_string("^!", dots[[i]])
+    key <- jaid::get_pattern("^!", dots[[i]])
+    diz <- jaid::del_pattern("^!", dots[[i]])
     if (is.na(key)) {
       df <- df[unique(df[(df[[to_var]] >= fdate & df[[from_var]] <
                             tdate) & (grepl(diz, df[[kcd_var]], perl = TRUE)),
@@ -42,7 +42,7 @@ subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
                           .SD, .SDcols = id_var]), on = id_var]
     }
   }
-  data.table::setattr(df, "class", old_class)
+  jaid::set_attr(df, "class", old_class)
   return(df)
 }
 
@@ -117,20 +117,20 @@ id_with_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
   zs[, `:=`((cols), lapply(.SD, factor)), .SDcols = cols]
   setorderv(zs, cols)
   raw <- data.table::copy(zs)
-  data.table::setattr(raw, "class", old_class)
-  data.table::setattr(z, "raw", raw)
+  jaid::set_attr(raw, "class", old_class)
+  jaid::set_attr(z, "raw", raw)
   ratio <- n <- nsum <- NULL
   for (i in 1L:(length(cols) - 1L)) {
     grp <- cols[1L:(length(cols) - i)]
     zs[, `:=`(nsum, sum(n)), by = grp]
     zs[, `:=`(ratio, n / nsum)]
     smry <- data.table::copy(zs)
-    data.table::setattr(smry, "class", old_class)
-    data.table::setattr(z, paste0("summary.", i), smry)
+    jaid::set_attr(smry, "class", old_class)
+    jaid::set_attr(z, paste0("summary.", i), smry)
   }
   smry <- data.table::copy(attr(z, "summary.1"))
-  data.table::setattr(z, "summary", smry)
-  data.table::setattr(z, "class", c("ir.data", old_class))
-  data.table::setattr(df, "class", old_class)
+  jaid::set_attr(z, "summary", smry)
+  jaid::set_attr(z, "class", c("ir.data", old_class))
+  jaid::set_attr(df, "class", old_class)
   return(z)
 }

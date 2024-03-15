@@ -16,11 +16,11 @@ Remotes:
 Imports:
   data.table (>= 1.14.2),
   ggplot2 (>= 3.3.3),
-  ggshort (>= 0.0.0.9001),
-  jaid (>= 0.0.0.9000),
+  ggshort,
+  jaid,
   rlang (>= 1.1.1),
-  scales (>= 1.3.0),
-  stringi (>= 1.8.3)
+  scales (>= 1.2.1),
+  stringi (>= 1.7.12)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Suggests: 
