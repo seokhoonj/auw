@@ -75,6 +75,5 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
     ggshort_theme(theme = theme)
 
   jaid::set_attr(risk_info, "class", old_class)
-  print(risk_info)
   return(g)
 }
