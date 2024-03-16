@@ -1,2 +1,2 @@
 
-utils::globalVariables(c(".N", "age_band", "gender", "kcd_book"))
+utils::globalVariables(c(".", ".N", "kcd_book"))

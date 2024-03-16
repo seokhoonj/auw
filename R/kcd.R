@@ -35,7 +35,7 @@ get_kcd <- function (x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
       rc <- max(nchar(df$ko))
       iter <- nc + nchar(" | ") + ceiling(rc * 1.6)
       line <- draw_line(min(iter, options()$width))
-      code <- stringi::stri_pad_right(df$kcd, width = nc)
+      code <- stringr::str_pad(df$kcd, width = nc, side = "right")
       result <- paste(paste(code, "|", df$ko), collapse = "\n")
     }
     else {
@@ -47,7 +47,7 @@ get_kcd <- function (x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
       rc <- max(nchar(df$en))
       iter <- nc + nchar(" | ") + rc
       line <- draw_line(min(iter, options()$width))
-      code <- stringi::stri_pad_right(df$kcd, width = nc)
+      code <- stringr::str_pad(df$kcd, width = nc, side = "right")
       result <- paste(paste(code, "|", df$en), collapse = "\n")
     }
     cat(line, "\n")
@@ -62,7 +62,7 @@ get_kcd <- function (x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
       rc <- max(nchar(df$ko))
       iter <- nc + nchar(" | ") + ceiling(rc * 1.6)
       line <- draw_line(min(iter, options()$width))
-      code <- stringi::stri_pad_right(df$kcd, width = nc)
+      code <- stringr::str_pad(df$kcd, width = nc, side = "right")
       result <- paste(paste(code, "|", df$ko), collapse = "\n")
     }
     else {
@@ -71,7 +71,7 @@ get_kcd <- function (x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
       rc <- max(nchar(df$en))
       iter <- nc + nchar(" | ") + rc
       line <- draw_line(min(iter, options()$width))
-      code <- stringi::stri_pad_right(df$kcd, width = nc)
+      code <- stringr::str_pad(df$kcd, width = nc, side = "right")
       result <- paste(paste(code, "|", df$en), collapse = "\n")
     }
     cat(line, "\n")
@@ -86,7 +86,7 @@ get_kcd <- function (x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
       rc <- max(nchar(df$ko))
       iter <- nc + nchar(" | ") + ceiling(rc * 1.6)
       line <- draw_line(min(iter, options()$width))
-      code <- stringi::stri_pad_right(df$kcd, width = nc)
+      code <- stringr::str_pad(df$kcd, width = nc, side = "right")
       result <- paste(paste(code, "|", df$ko), collapse = "\n")
     }
     else {
@@ -95,7 +95,7 @@ get_kcd <- function (x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
       rc <- max(nchar(df$en))
       iter <- nc + nchar(" | ") + rc
       line <- draw_line(min(iter, options()$width))
-      code <- stringi::stri_pad_right(df$kcd, width = nc)
+      code <- stringr::str_pad(df$kcd, width = nc, side = "right")
       result <- paste(paste(code, "|", df$en), collapse = "\n")
     }
     cat(line, "\n")
@@ -103,10 +103,4 @@ get_kcd <- function (x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
     cat(line, "\n")
     invisible(df[[type[[1L]]]])
   }
-}
-
-draw_line <- function(width, mark = "=") {
-  if (missing(width))
-    width <- options()$width
-  paste(rep(mark, times = width), collapse = "")
 }

@@ -20,7 +20,7 @@ Imports:
   jaid,
   rlang (>= 1.1.1),
   scales (>= 1.2.1),
-  stringi (>= 1.7.12)
+  stringr (>= 1.5.1)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Suggests: 

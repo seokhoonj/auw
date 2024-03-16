@@ -107,7 +107,7 @@ irplot <- function(x, color_type = c("base", "deep"),
   scales <- match.arg(scales)
   color_type <- match.arg(color_type)
   is_pair <- length(levels(dt$decl)) <= 2
-  ratio <- NULL
+  age_band <- gender <- ratio <- NULL
   if (jaid::has_cols(dt, c("gender", "age_band")))
     return(
       ggbar(dt, x = age_band, y = ratio, fill = decl) +
@@ -249,7 +249,7 @@ rrplot <- function(x, logscale = FALSE,
     title <- paste(title, "(log scale)")
   }
   ymax <- max(x$rr, na.rm = TRUE) * 1.3
-  label <- rr <- NULL
+  age_band <- gender <- label <- rr <- NULL
   if (jaid::has_cols(x, c("gender", "age_band")))
     return(
       ggbar(data = x, x = age_band, y = rr, ymax = ymax, label = label,

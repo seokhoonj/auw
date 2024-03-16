@@ -18,25 +18,24 @@ split_date <- function(df, from_var, to_var, udate, all = TRUE,
   from_var <- rlang::as_name(rlang::enquo(from_var))
   to_var <- rlang::as_name(rlang::enquo(to_var))
   for (i in seq_along(udate)) {
-    tmp_e <- df[!(df[[from_var]] < udate[i] & df[[to_var]] >=
-                    udate[i])]
-    tmp_a <- df[(df[[from_var]] < udate[i] & df[[to_var]] >=
-                   udate[i])]
+    tmp_e <- df[!(df[[from_var]] < udate[i] & df[[to_var]] >= udate[i])]
+    tmp_a <- df[ (df[[from_var]] < udate[i] & df[[to_var]] >= udate[i])]
     tmp_b <- data.table::copy(tmp_a)
     data.table::set(tmp_a, j = to_var, value = udate[i] - 1)
     data.table::set(tmp_b, j = from_var, value = udate[i])
     if (all) {
-      df <- rbind(tmp_e, tmp_a, tmp_b)
+      dt <- data.table::rbindlist(list(tmp_e, tmp_a, tmp_b))
     }
     else {
-      df <- rbind(tmp_a, tmp_b)
+      dt <- data.table::rbindlist(list(tmp_a, tmp_b))
     }
     if (verbose)
       cat(sprintf("%s is applied\n", as.Date(udate[i])))
   }
   if (verbose)
     cat("Please check stays or claim year, \nyou may have to re-calculate!\n")
-  setorderv(df, names(df))
+  data.table::setorderv(dt, names(dt))
+  jaid::set_attr(dt, "class", old_class)
   jaid::set_attr(df, "class", old_class)
-  return(df)
+  return(dt)
 }

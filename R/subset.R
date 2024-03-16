@@ -20,7 +20,8 @@
 subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
                                start, end, ...) {
   old_class <- class(df)
-  jaid::set_dt(df)
+  dt <- data.table::copy(df)
+  jaid::set_dt(dt)
   id_var   <- rlang::as_name(rlang::enquo(id_var))
   kcd_var  <- rlang::as_name(rlang::enquo(kcd_var))
   from_var <- rlang::as_name(rlang::enquo(from_var))
@@ -31,19 +32,19 @@ subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
     tdate <- jaid::add_mon(udate, end)
     key <- jaid::get_pattern("^!", dots[[i]])
     diz <- jaid::del_pattern("^!", dots[[i]])
-    if (is.na(key)) {
-      df <- df[unique(df[(df[[to_var]] >= fdate & df[[from_var]] <
-                            tdate) & (grepl(diz, df[[kcd_var]], perl = TRUE)),
+    if (key == "") {
+      dt <- dt[unique(dt[(dt[[to_var]] >= fdate & dt[[from_var]] < tdate) &
+                         (grepl(diz, dt[[kcd_var]], perl = TRUE)),
                          .SD, .SDcols = id_var]), on = id_var]
     }
     else {
-      df <- df[!unique(df[(df[[to_var]] >= fdate & df[[from_var]] <
-                             tdate) & (grepl(diz, df[[kcd_var]], perl = TRUE)),
+      dt <- dt[!unique(dt[(dt[[to_var]] >= fdate & dt[[from_var]] < tdate) &
+                          (grepl(diz, dt[[kcd_var]], perl = TRUE)),
                           .SD, .SDcols = id_var]), on = id_var]
     }
   }
-  jaid::set_attr(df, "class", old_class)
-  return(df)
+  jaid::set_attr(dt, "class", old_class)
+  return(dt)
 }
 
 #' id with kcd terms
