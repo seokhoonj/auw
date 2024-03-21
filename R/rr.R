@@ -40,6 +40,7 @@
 id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                                  udate, decl1 = NULL, decl2 = NULL, decl3 = NULL,
                                  excl = NULL, claim = NULL) {
+  jaid::has_ptr(df)
   id_group_var <- rlang::enexpr(id_group_var)
   kcd_var  <- rlang::as_name(rlang::enquo(kcd_var))
   from_var <- rlang::as_name(rlang::enquo(from_var))
