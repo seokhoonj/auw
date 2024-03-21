@@ -65,7 +65,7 @@ id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
   jaid::set_attr(smry, "excl", excl[[3L]])
   jaid::set_attr(smry, "claim", claim[[3L]])
   jaid::set_attr(dt, "summary", smry)
-  jaid::set_attr(dt, "class", old_class)
+  jaid::set_attr(dt, "class", c("ir.data", old_class))
   jaid::set_attr_class(dt, "raw|summary", old_class)
   jaid::set_attr(df, "class", old_class)
   return(dt)
