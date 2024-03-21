@@ -7,7 +7,8 @@
 #' setnames setorder setorderv
 #' @importFrom jaid add_mon del_pattern draw_line get_copied_dt get_pattern
 #' has_ptr match_cols paste_list paste_str paste_uni_str replace_na_with_empty
-#' replace_na_with_zero rm_cols rotate set_attr set_dt set_ptr set_tibble unilen
+#' replace_na_with_zero rm_cols rotate set_attr set_attr_class set_dt set_ptr
+#' set_tibble unilen
 #' @importFrom rlang as_name enquo enquos ensym ensyms list2 syms
 #' @importFrom scales comma
 #' @importFrom stats fisher.test formula

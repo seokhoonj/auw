@@ -54,20 +54,20 @@ id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                           kcd_var = !!kcd_var, from_var = !!from_var,
                           to_var = !!to_var, udate = udate, !!!dots)
   smry <- summary(dt)
-  old_class <- class(smry)
-  jaid::set_dt(smry)
   decl_cols <- names(smry)[grepl("^decl", names(smry), perl = TRUE)]
   smry$decl <- jaid::paste_list(smry[, .SD, .SDcols = decl_cols], sep = "+")
   smry$decl <- as.factor(smry$decl)
   rm_cols(smry, !!decl_cols)
   data.table::setcolorder(smry, "decl", before = "excl")
-  jaid::set_attr(smry, "class", c("ir", old_class))
   decl <- list(decl1[[3L]], decl2[[3L]], decl3[[3L]])
   decl <- decl[sapply(decl, function(x) !is.null(x))]
   jaid::set_attr(smry, "decl", paste(decl, collapse = " & "))
   jaid::set_attr(smry, "excl", excl[[3L]])
   jaid::set_attr(smry, "claim", claim[[3L]])
   jaid::set_attr(dt, "summary", smry)
+  jaid::set_attr(dt, "class", old_class)
+  jaid::set_attr_class(dt, "raw|summary", old_class)
+  jaid::set_attr(df, "class", old_class)
   return(dt)
 }
 

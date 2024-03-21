@@ -33,7 +33,8 @@ no return value
 Set age band
 }
 \examples{
-\donttest{df <- data.frame(age = sample(0:99, 20, replace = TRUE))
+\dontrun{
+df <- data.frame(age = sample(0:99, 20, replace = TRUE))
 set_age_band(df, age)}
 
 }
