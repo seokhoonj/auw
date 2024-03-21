@@ -19,14 +19,14 @@
 #' @export
 subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
                                start, end, ...) {
-  old_class <- class(df)
-  dt <- data.table::copy(df)
-  jaid::set_dt(dt)
   id_var   <- rlang::as_name(rlang::enquo(id_var))
   kcd_var  <- rlang::as_name(rlang::enquo(kcd_var))
   from_var <- rlang::as_name(rlang::enquo(from_var))
   to_var   <- rlang::as_name(rlang::enquo(to_var))
   dots <- rlang::list2(...)
+  old_class <- class(df)
+  dt <- data.table::copy(df)
+  jaid::set_dt(dt)
   for (i in seq_along(dots)) {
     fdate <- jaid::add_mon(udate, start)
     tdate <- jaid::add_mon(udate, end)
@@ -78,15 +78,15 @@ subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
 id_with_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                               udate, ...) {
   # class: ir.data (incidence rate data)
-  old_class <- class(df)
-  jaid::set_dt(df)
-  id_group_var <- match_cols(df, sapply(rlang::enexpr(id_group_var),
-                                        rlang::as_name))
+  id_group_var <- jaid::match_cols(df, sapply(rlang::enexpr(id_group_var),
+                                              rlang::as_name))
   id_var    <- id_group_var[1L]
   kcd_var   <- rlang::as_name(rlang::enquo(kcd_var))
   from_var  <- rlang::as_name(rlang::enquo(from_var))
   to_var    <- rlang::as_name(rlang::enquo(to_var))
   kcd_terms <- rlang::list2(...)
+  old_class <- class(df)
+  jaid::set_dt(df)
   n <- length(kcd_terms)
   id_list <- vector(mode = "list", length = n + 1L)
   id_list[[1L]] <- unique(df[, .SD, .SDcols = id_group_var])

@@ -40,7 +40,6 @@
 id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                                  udate, decl1 = NULL, decl2 = NULL, decl3 = NULL,
                                  excl = NULL, claim = NULL) {
-  old_class <- class(df)
   id_group_var <- rlang::enexpr(id_group_var)
   kcd_var  <- rlang::as_name(rlang::enquo(kcd_var))
   from_var <- rlang::as_name(rlang::enquo(from_var))
@@ -48,6 +47,8 @@ id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
   dots <- rlang::list2(decl1 = decl1, decl2 = decl2, decl3 = decl3,
                        excl = excl, claim = claim)
   dots <- dots[sapply(dots, function(x) !is.null(x))]
+  old_class <- class(df)
+  jaid::set_dt(df)
   dt <- id_with_kcd_terms(df, id_group_var = !!id_group_var,
                           kcd_var = !!kcd_var, from_var = !!from_var,
                           to_var = !!to_var, udate = udate, !!!dots)

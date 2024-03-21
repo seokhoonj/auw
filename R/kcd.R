@@ -18,7 +18,7 @@
 #' kcd}
 #'
 #' @export
-get_kcd <- function (x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
+get_kcd <- function(x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
   if (missing(x))
     stop("Please insert kcd code string or regular expressions.")
   x <- toupper(x)
