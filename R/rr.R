@@ -179,6 +179,7 @@ get_rel_risk <- function(x, decl_vs = c("0", "1"), threshold = .975) {
   if (length(setdiff(decl_vs, levels(x$decl))) > 0)
     stop("Invalid declaration levels")
   dt <- x[x$decl %in% decl_vs & x$excl == 0 & x$claim == 1,]
+  jaid::set_dt(dt)
   if (jaid::unilen(dt$decl) > 2)
     stop("Please select two types of declarations to calculate relative risk")
   group <- setdiff(names(dt), c("decl", "excl", "claim", "n", "nsum", "ratio"))
