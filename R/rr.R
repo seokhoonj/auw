@@ -40,7 +40,7 @@
 id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                                  udate, decl1 = NULL, decl2 = NULL, decl3 = NULL,
                                  excl = NULL, claim = NULL) {
-  jaid::has_ptr(df)
+  jaid::has_ptr(df, error_raise = TRUE)
   id_group_var <- rlang::enexpr(id_group_var)
   kcd_var  <- rlang::as_name(rlang::enquo(kcd_var))
   from_var <- rlang::as_name(rlang::enquo(from_var))
@@ -106,6 +106,7 @@ irplot <- function(x, color_type = c("base", "deep"),
   claim <- attr(x, "claim")
   subtitle <- sprintf("Decl: %s - Excl: %s - Claim: %s", decl, excl, claim)
   dt <- x[x$excl == 0 & x$claim == 1,]
+  print(dt)
   # dt$label <- sprintf("%.2f (%s)", dt$ratio * 100, scales::comma(dt$n))
   scales <- match.arg(scales)
   color_type <- match.arg(color_type)

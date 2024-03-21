@@ -19,7 +19,7 @@
 #' @export
 subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
                                start, end, ...) {
-  jaid::has_ptr(df)
+  jaid::has_ptr(df, error_raise = TRUE)
   id_var   <- rlang::as_name(rlang::enquo(id_var))
   kcd_var  <- rlang::as_name(rlang::enquo(kcd_var))
   from_var <- rlang::as_name(rlang::enquo(from_var))
@@ -78,7 +78,7 @@ subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
 id_with_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                               udate, ...) {
   # class: ir.data (incidence rate data)
-  jaid::has_ptr(df)
+  jaid::has_ptr(df, error_rasie = TRUE)
   id_group_var <- jaid::match_cols(df, sapply(rlang::enexpr(id_group_var),
                                               rlang::as_name))
   id_var    <- id_group_var[1L]
