@@ -213,7 +213,7 @@ plot.alr.data.mean <- function(x, group_var, gender_var, period_var = "uym",
                                color_type = c("base", "deep"),
                                scales = c("fixed", "free_y", "free_x", "free"),
                                theme = c("view", "save", "shiny"), ...) {
-  jaid::assert_class(x, "alr.data")
+  jaid::assert_class(x, "alr.data.mean")
   group_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
   period_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elapsed_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
