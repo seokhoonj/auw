@@ -28,7 +28,7 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
   data.table::setnames(dn, prd_var, "n_sample")
   dt <- jaid::get_stat_by(df, group_var = !!grp_prd_elp_var,
                           value_var = !!val_var)
-  dt[dn, on = grp_prd_var, `:=`(n_sample, n_sample)]
+  dt[dn, on = grp_elp_var, `:=`(n_sample, n_sample)]
   data.table::setcolorder(dt, "n_sample", before = prd_var)
   jaid::set_stat_by(dt, group_var = !!grp_prd_var,
                     value_var = !!val_var, fun = cumsum)

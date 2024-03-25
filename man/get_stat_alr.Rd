@@ -9,7 +9,7 @@ get_stat_alr(
   group_var,
   value_var = c("loss", "rp"),
   period_var = c("uym"),
-  elapse_var = c("elp")
+  elapsed_var = c("elpm")
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ get_stat_alr(
 
 \item{period_var}{a name of column specifying period}
 
-\item{elapse_var}{a name of column specifying elapsed period}
+\item{elapsed_var}{a name of column specifying elapsed period}
 }
 \value{
 a data.frame
