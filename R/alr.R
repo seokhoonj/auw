@@ -35,8 +35,8 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
                     value_var = !!val_var, fun = cumsum)
   dt[, `:=`(margin, rp - loss)]
   dt[, `:=`(cmargin, crp - closs)]
-  dt[, `:=`(profit, as.factor(ifelse(margin < 0, "neg", "pos")))]
-  dt[, `:=`(cprofit, as.factor(ifelse(cmargin < 0, "neg", "pos")))]
+  dt[, `:=`(profit, factor(ifelse(margin >= 0, "pos", "neg"), levels = c("pos", "neg")))]
+  dt[, `:=`(cprofit, factor(ifelse(cmargin >= 0, "pos", "neg"), levels = c("pos", "neg")))]
   dt[, `:=`(lr, loss / rp)]
   dt[, `:=`(clr, closs / crp)]
 
