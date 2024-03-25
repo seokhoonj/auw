@@ -166,6 +166,7 @@ plot.alr.data <- function(x, group_var, period_var = "uym", elapsed_var = "elpm"
 #' @param gender_var a name of the gender variable (if exists.)
 #' @param period_var a name of the period variable ("uym", "uy")
 #' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
+#' @param color_type a string of color type, base and deep
 #' @param scales Should `scales` be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?
 #' @param theme a string specifying a ggshort theme function ("view", "save", "shiny")
 #' @param ... ggshort theme arguments
@@ -175,7 +176,7 @@ plot.alr.data <- function(x, group_var, period_var = "uym", elapsed_var = "elpm"
 alr_mean_plot <- function(x, group_var, gender_var, period_var = "uym", elapsed_var = "elpm",
                           color_type = c("base", "deep"),
                           scales = c("fixed", "free_y", "free_x", "free"),
-                          theme = c("view", "save", "shiny")) {
+                          theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data.mean")
   elapsed <- rlang::ensym(elapsed_var)
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
@@ -187,21 +188,21 @@ alr_mean_plot <- function(x, group_var, gender_var, period_var = "uym", elapsed_
   clr_mean <- clr_se_lwr <- clr_se_upp <- NULL
   if (missing(gender_var))
     return(
-      ggline(x, x = !!elapsed, y = clr_mean, ymin_err = clr_se_lwr,
+      ggline(data = x, x = !!elapsed, y = clr_mean, ymin_err = clr_se_lwr,
              ymax_err = clr_se_upp) +
         geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
-        facet_wrap(sprintf("~%s", grp_var), scales = scales) +
-        theme_view()
+        facet_wrap(sprintf("~ %s", grp_var), scales = scales) +
+        ggshort_theme(theme = theme, ...)
     )
   gender <- rlang::ensym(gender_var)
   gnd_var <- jaid::match_cols(x, sapply(rlang::enexpr(gender_var), rlang::as_name))
   return(
-    ggline(x, x = !!elapsed, y = clr_mean, ymin_err = clr_se_lwr,
+    ggline(data = x, x = !!elapsed, y = clr_mean, ymin_err = clr_se_lwr,
            ymax_err = clr_se_upp, group = !!gender, color = !!gender) +
       geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
-      scale_pair_color_manual(dt[[gnd_var]]) +
+      scale_pair_color_manual(x[[gnd_var]]) +
       facet_wrap(sprintf("~%s", grp_var), scales = scales) +
-      theme_view()
+      ggshort_theme(theme = theme, ...)
   )
 }
 
@@ -241,6 +242,7 @@ plot.alr.data.mean <- function(x, group_var, gender_var, period_var = "uym",
 #' @param gender_var a name of the gender variable (if exists.)
 #' @param period_var a name of the period variable ("uym", "uy")
 #' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
+#' @param color_type a string of color type, base and deep
 #' @param scales Should `scales` be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?
 #' @param theme a string specifying a ggshort theme function ("view", "save", "shiny")
 #' @param ... ggshort theme arguments
@@ -251,7 +253,7 @@ alr_median_plot <- function(x, group_var, gender_var, period_var = "uym",
                             elapsed_var = "elpm",
                             color_type = c("base", "deep"),
                             scales = c("fixed", "free_y", "free_x", "free"),
-                            theme = c("view", "save", "shiny")) {
+                            theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data.median")
   elapsed <- rlang::ensym(elapsed_var)
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
@@ -263,21 +265,21 @@ alr_median_plot <- function(x, group_var, gender_var, period_var = "uym",
   clr_median <- clr_se_lwr <- clr_se_upp <- NULL
   if (missing(gender_var))
     return(
-      ggline(x, x = !!elapsed, y = clr_median, ymin_err = clr_se_lwr,
+      ggline(data = x, x = !!elapsed, y = clr_median, ymin_err = clr_se_lwr,
              ymax_err = clr_se_upp) +
         geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
         facet_wrap(sprintf("~%s", grp_var), scales = scales) +
-        theme_view()
+        ggshort_theme(theme = theme, ...)
     )
   gender <- rlang::ensym(gender_var)
   gnd_var <- jaid::match_cols(x, sapply(rlang::enexpr(gender_var), rlang::as_name))
   return(
-    ggline(x, x = !!elapsed, y = clr_median, ymin_err = clr_se_lwr,
+    ggline(data = x, x = !!elapsed, y = clr_median, ymin_err = clr_se_lwr,
            ymax_err = clr_se_upp, group = !!gender, color = !!gender) +
       geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
-      scale_pair_color_manual(dt[[gnd_var]]) +
+      scale_pair_color_manual(x[[gnd_var]]) +
       facet_wrap(sprintf("~%s", grp_var), scales = scales) +
-      theme_view()
+      ggshort_theme(theme = theme, ...)
   )
 }
 
