@@ -38,7 +38,7 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
   dt[, `:=`(clr, closs / crp)]
 
   dc <- data.table::melt(dt, id.vars = group_period_elapse_var,
-                         measure.vars = c("closs", "crp"))
+                         measure.vars = c("closs", "cmargin", "crp"))
   dm <- dt[, .(
     n_sample   = .N,
     lr_mean    = mean(lr),
@@ -60,7 +60,7 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
   return(dt[])
 }
 
-#' @method summary alr.data
+#' @method mean alr.data
 #' @export
 mean.alr.data <- function(x, ...) {
   jaid::assert_class(x, "alr.data")
