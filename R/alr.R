@@ -53,9 +53,9 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
 
   dm <- dt[, .(
     n_sample   = .N,
-    lr_med     = median(lr),
+    lr_median  = median(lr),
     lr_se      = median(lr) / sqrt(.N),
-    clr_med    = median(clr),
+    clr_median = median(clr),
     clr_se     = median(clr) / sqrt(.N),
     lr_se_lwr  = median(lr)  - median(lr)  / sqrt(.N),
     lr_se_upp  = median(lr)  + median(lr)  / sqrt(.N),
