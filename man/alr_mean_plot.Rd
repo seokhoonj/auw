@@ -7,7 +7,6 @@
 alr_mean_plot(
   x,
   group_var,
-  gender_var,
   period_var = "uym",
   elapsed_var = "elpm",
   color_type = c("base", "deep"),
@@ -20,8 +19,6 @@ alr_mean_plot(
 \item{x}{an alr.data object}
 
 \item{group_var}{a name of the group variable}
-
-\item{gender_var}{a name of the gender variable (if exists.)}
 
 \item{period_var}{a name of the period variable ("uym", "uy")}
 
