@@ -63,14 +63,22 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
     clr_se_upp = median(clr) + median(clr) / sqrt(.N)
   ), keyby = grp_elp_var]
 
-  jaid::set_attr(dc, "class", c("alr.data.cumsum", old_class))
+  jaid::set_attr(dc, "class", c("alr.data.melt", old_class))
   jaid::set_attr(dm, "class", c("alr.data.median", old_class))
   jaid::set_attr(da, "class", c("alr.data.mean", old_class))
   jaid::set_attr(dt, "class", c("alr.data", old_class))
   jaid::set_attr(dt, "cumsum", dc)
-  jaid::set_attr(dt, "mean", dm)
+  jaid::set_attr(dt, "median", dm)
+  jaid::set_attr(dt, "mean", da)
   jaid::set_attr(df, "class", old_class)
   return(dt[])
+}
+
+#' @method melt alr.data
+#' @export
+melt.alr.data <- function(data, ...) {
+  jaid::assert_class(data, "alr.data")
+  attr(data, "alr.data.melt")
 }
 
 #' @method mean alr.data
