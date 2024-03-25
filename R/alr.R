@@ -22,7 +22,8 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
   grp_prd_elp_var <- c(grp_var, prd_var, elp_var)
   old_class <- class(df)
   jaid::set_dt(df)
-  closs <- clr <- cmargin <- crp <- loss <- lr <- n_sample <- rp <- NULL
+  closs <- clr <- cmargin <- cprofit <- crp <- loss <- lr <- n_sample <-
+    profit <- rp <- NULL
   dn <- jaid::get_stat_by(df, group_var = !!grp_elp_var,
                           value_var = !!prd_var, fun = jaid::unilen)
   data.table::setnames(dn, prd_var, "n_sample")
@@ -34,11 +35,13 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
                     value_var = !!val_var, fun = cumsum)
   dt[, `:=`(margin, rp - loss)]
   dt[, `:=`(cmargin, crp - closs)]
+  dt[, `:=`(profit, as.factor(ifelse(margin < 0, "neg", "pos")))]
+  dt[, `:=`(cprofit, as.factor(ifelse(cmargin < 0, "neg", "pos")))]
   dt[, `:=`(lr, loss / rp)]
   dt[, `:=`(clr, closs / crp)]
 
   dc <- data.table::melt(dt, id.vars = grp_prd_elp_var,
-                         measure.vars = c("closs", "cmargin", "crp"))
+                         measure.vars = c("closs", "crp"))
   da <- dt[, .(
     n_sample   = .N,
     lr_mean    = mean(lr),
