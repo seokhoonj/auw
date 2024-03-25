@@ -193,8 +193,7 @@ alr_mean_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm"
         facet_wrap(grp_var, scales = scales) +
         ggshort_theme(theme = theme, ...)
     )
-  gender <- rlang::ensym(gender_var)
-  gnd_var <- jaid::match_cols(x, sapply(rlang::enexpr(gender_var), rlang::as_name))
+  gender <- NULL
   return(
     ggline(data = x, x = !!elapsed, y = clr_mean, ymin_err = clr_se_lwr,
            ymax_err = clr_se_upp, group = gender, color = gender) +
@@ -218,16 +217,8 @@ plot.alr.data.mean <- function(x, group_var, period_var = "uym",
   elapsed_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  if (!has_cols(x, "gender"))
-    return(
-      alr_mean_plot(x = x, group_var = !!group_var, period_var = !!period_var,
-                    elapsed_var = !!elapsed_var, scales = scales, theme = theme)
-    )
-  return(
-    alr_mean_plot(x = x, group_var = !!group_var, gender_var = gender,
-                  period_var = !!period_var, elapsed_var = !!elapsed_var,
-                  scales = scales, theme = theme)
-  )
+  alr_mean_plot(x = x, group_var = !!group_var, period_var = !!period_var,
+                elapsed_var = !!elapsed_var, scales = scales, theme = theme)
 }
 
 
@@ -268,6 +259,7 @@ alr_median_plot <- function(x, group_var, period_var = "uym",
         facet_wrap(grp_var, scales = scales) +
         ggshort_theme(theme = theme, ...)
     )
+  gender <- NULL
   return(
     ggline(data = x, x = !!elapsed, y = clr_median, ymin_err = clr_se_lwr,
            ymax_err = clr_se_upp, group = gender, color = gender) +
@@ -292,15 +284,7 @@ plot.alr.data.median <- function(x, group_var, period_var = "uym",
   color_type <- match.arg(color_type)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  if (missing(gender_var))
-    return(
-      alr_median_plot(x = x, group_var = !!group_var, period_var = !!period_var,
-                      elapsed_var = !!elapsed_var, color_type = color_type,
-                      scales = scales, theme = theme)
-    )
-  return(
-    alr_median_plot(x = x, group_var = !!group_var, gender_var = "gender",
-                    period_var = !!period_var, elapsed_var = !!elapsed_var,
-                    color_type = color_type, scales = scales, theme = theme)
-  )
+  alr_median_plot(x = x, group_var = !!group_var, period_var = !!period_var,
+                  elapsed_var = !!elapsed_var, color_type = color_type,
+                  scales = scales, theme = theme)
 }
