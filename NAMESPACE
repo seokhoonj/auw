@@ -3,6 +3,7 @@
 S3method(mean,alr.data)
 S3method(median,alr.data)
 S3method(melt,alr.data)
+S3method(plot,alr.data)
 S3method(plot,ir)
 S3method(plot,rr)
 S3method(summary,ir.data)

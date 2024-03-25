@@ -67,7 +67,7 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
   jaid::set_attr(dm, "class", c("alr.data.median", old_class))
   jaid::set_attr(da, "class", c("alr.data.mean", old_class))
   jaid::set_attr(dt, "class", c("alr.data", old_class))
-  jaid::set_attr(dt, "cumsum", dc)
+  jaid::set_attr(dt, "melt", dc)
   jaid::set_attr(dt, "median", dm)
   jaid::set_attr(dt, "mean", da)
   jaid::set_attr(df, "class", old_class)
@@ -78,21 +78,21 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
 #' @export
 melt.alr.data <- function(data, ...) {
   jaid::assert_class(data, "alr.data")
-  attr(data, "alr.data.melt")
+  attr(data, "melt")
 }
 
 #' @method mean alr.data
 #' @export
 mean.alr.data <- function(x, ...) {
   jaid::assert_class(x, "alr.data")
-  attr(x, "alr.data.mean")
+  attr(x, "mean")
 }
 
 #' @method median alr.data
 #' @export
 median.alr.data <- function(x, ...) {
   jaid::assert_class(x, "alr.data")
-  attr(x, "alr.data.median")
+  attr(x, "median")
 }
 
 #' Actual loss ratio by each UY months
@@ -112,7 +112,7 @@ median.alr.data <- function(x, ...) {
 alr_uym_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
                          scales = c("fixed", "free_y", "free_x", "free"),
                          theme = c("view", "save", "shiny"), ...) {
-  jaid::assert_class(x, "alr.data.mean")
+  jaid::assert_class(x, "alr.data")
   period  <- rlang::ensym(period_var)
   elapsed <- rlang::ensym(elapsed_var)
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
@@ -134,10 +134,25 @@ alr_uym_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
     stop("The combinations (uym + elpm or uy + elp) are not found.", call. = FALSE)
   }
   clr <- NULL
-  ggline(x, x = !!elapsed, y = clr, group = !!period, color = !!period) +
+  ggline(data = x, x = !!elapsed, y = clr, group = !!period, color = !!period) +
     scale_color_gradientn(colours = grDevices::rainbow(length(len)),
                           breaks = breaks) +
     geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
     facet_wrap(sprintf("~ %s", grp_var), scales = scales) +
-    ggshort:::ggshort_theme(theme = theme, ...)
+    ggshort_theme(theme = theme, ...)
+}
+
+#' @method plot alr.data
+#' @export
+plot.alr.data <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
+                          scales = c("fixed", "free_y", "free_x", "free"),
+                          theme = c("view", "save", "shiny"), ...) {
+  jaid::assert_class(x, "alr.data")
+  group_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
+  period_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
+  elapsed_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
+  scales <- match.arg(scales)
+  theme <- match.arg(theme)
+  alr_uym_plot(x = x, group_var = !!group_var, period_var = !!period_var,
+               elapsed_var = !!elapsed_var, scales = scales, theme = theme)
 }
