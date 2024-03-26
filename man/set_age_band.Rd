@@ -10,7 +10,8 @@ set_age_band(
   interval = 5,
   right = FALSE,
   col_nm = "age_band",
-  labels
+  cutoff = FALSE,
+  label_type = c("close", "open.start", "open", "open.start")
 )
 }
 \arguments{
@@ -22,9 +23,11 @@ set_age_band(
 
 \item{right}{logical, indicating if the intervals should be closed on the right (and open on the left) or vice versa.}
 
-\item{col_nm}{a string sepcifying age band column name}
+\item{col_nm}{a string specifying age band column name}
 
-\item{labels}{a string vector specifying age band label}
+\item{cutoff}{a logical to use maximum age cutoff}
+
+\item{label_type}{a string vector specifying label type ("close", "open", "open.start", "open.end")}
 }
 \value{
 no return value
@@ -35,6 +38,7 @@ Set age band
 \examples{
 \dontrun{
 df <- data.frame(age = sample(0:99, 20, replace = TRUE))
+set_ptr(df)
 set_age_band(df, age)}
 
 }
