@@ -303,3 +303,52 @@ plot.alr.data.median <- function(x, group_var, period_var = "uym",
                   elapsed_var = !!elapsed_var, color_type = color_type,
                   scales = scales, theme = theme)
 }
+
+#' Compare actual cumulative loss ratio plot
+#'
+#' Compare actual comulative loss, risk premium and loss ratio among underwriting year months.
+#'
+#' @param df a data.frame
+#' @param elapsed_num a numeric specifying elapsed months
+#' @param period_var a name of the period variable ("uym", "uy")
+#' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
+#' @param theme a string specifying a ggshort theme function ("view", "save", "shiny")
+#' @return a gtable object
+#'
+#' @export
+alr_comp_plot <- function(df, elapsed_num, period_var = "uym", elapsed_var = "elpm",
+                          theme = c("view", "save", "shiny")) {
+  jaid::assert_class(df, "data.frame")
+  period <- rlang::ensym(period_var)
+  elapsed <- rlang::ensym(elapsed_var)
+  theme <- match.arg(theme)
+  dt <- get_stat_alr(df = df, period_var = !!period_var, elapsed_var = !!elapsed_var)
+
+  dm <- melt(dt, id.vars = c(period_var, elapsed_var, "cprofit"),
+             measure.vars = c("clr"))
+  dm <- dm[dm[[elapsed_var]] == elapsed_num,]
+  cprofit <- value <- NULL
+  g1 <- ggbar(dm, x = !!period, y = value, fill = cprofit) +
+    geom_hline_mean(aes(x = !!period, y = value, fill = NULL)) +
+    geom_hline(yintercept = 1, color = "black", linetype = "dashed") +
+    scale_pair_fill_manual(dm[["cprofit"]], pair_levels = c("pos", "neg")) +
+    coord_flip() +
+    ylab("cum loss ratio") +
+    facet_wrap("variable") +
+    ggshort_theme(theme = theme) +
+    theme(panel.border = element_rect(linewidth = 1),
+          strip.background = element_rect(linewidth = 1))
+  legend <- get_legend(g1)
+
+  dc <- melt(dt, id.vars = c(period_var, elapsed_var, "cprofit"),
+             measure.vars = c("crp", "closs", "cmargin"))
+  dc <- dc[dc[[elapsed_var]] == elapsed_num,]
+  g2 <- ggbar(dc, x = !!period, y = value, fill = cprofit) +
+    geom_hline_mean(aes(x = !!period, y = value, fill = NULL)) +
+    scale_pair_fill_manual(dm[["cprofit"]], pair_levels = c("pos", "neg")) +
+    coord_flip() +
+    xlab("") +
+    facet_wrap("variable") +
+    ggshort_theme(theme = theme, legend.position = "none", y.size = 0)
+  grid_left_to_right(g1, g2, legend, widths = c(3.5, 6.5))
+}
