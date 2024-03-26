@@ -66,7 +66,7 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
     clr_se_upp = median(clr) + median(clr) / sqrt(.N)
   ), keyby = grp_elp_var]
 
-  jaid::set_attr(dc, "class", c("alr.data.melt", old_class))
+  jaid::set_attr(dc, "class", c("alr.data.longer", old_class))
   jaid::set_attr(dm, "class", c("alr.data.median", old_class))
   jaid::set_attr(da, "class", c("alr.data.mean", old_class))
   jaid::set_attr(dt, "class", c("alr.data", old_class))
@@ -77,11 +77,23 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
   return(dt[])
 }
 
-#' @method melt alr.data
+#' Longer data structure
+#'
+#' Make a data structure longer
+#'
+#' @param data a data.frame
+#' @param ... further arguments passed to or from other methods.
+#'
 #' @export
-melt.alr.data <- function(data, ...) {
+longer <- function(data, ...) {
+  UseMethod("longer")
+}
+
+#' @method longer alr.data
+#' @export
+longer.alr.data <- function(data, ...) {
   jaid::assert_class(data, "alr.data")
-  attr(data, "melt")
+  attr(data, "longer")
 }
 
 #' @method mean alr.data
