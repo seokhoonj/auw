@@ -45,37 +45,14 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
 
   dc <- data.table::melt(dt, id.vars = grp_prd_elp_var,
                          measure.vars = c("closs", "crp"))
-  da <- dt[, .(
-    n_sample   = .N,
-    lr_mean    = mean(lr),
-    lr_se      = mean(lr) / sqrt(.N),
-    clr_mean   = mean(clr),
-    clr_se     = mean(clr) / sqrt(.N),
-    lr_se_lwr  = mean(lr)  - mean(lr)  / sqrt(.N),
-    lr_se_upp  = mean(lr)  + mean(lr)  / sqrt(.N),
-    clr_se_lwr = mean(clr) - mean(clr) / sqrt(.N),
-    clr_se_upp = mean(clr) + mean(clr) / sqrt(.N)
-  ), keyby = grp_elp_var]
 
-  dm <- dt[, .(
-    n_sample   = .N,
-    lr_median  = median(lr),
-    lr_se      = median(lr) / sqrt(.N),
-    clr_median = median(clr),
-    clr_se     = median(clr) / sqrt(.N),
-    lr_se_lwr  = median(lr)  - median(lr)  / sqrt(.N),
-    lr_se_upp  = median(lr)  + median(lr)  / sqrt(.N),
-    clr_se_lwr = median(clr) - median(clr) / sqrt(.N),
-    clr_se_upp = median(clr) + median(clr) / sqrt(.N)
-  ), keyby = grp_elp_var]
-
+  jaid::set_attr(dt, "group_var", grp_var)
+  jaid::set_attr(dt, "value_var", val_var)
+  jaid::set_attr(dt, "period_var", prd_var)
+  jaid::set_attr(dt, "elapsed_var", elp_var)
   jaid::set_attr(dc, "class", c("alr.data.longer", old_class))
-  jaid::set_attr(dm, "class", c("alr.data.median", old_class))
-  jaid::set_attr(da, "class", c("alr.data.mean", old_class))
   jaid::set_attr(dt, "class", c("alr.data", old_class))
-  jaid::set_attr(dt, "melt", dc)
-  jaid::set_attr(dt, "median", dm)
-  jaid::set_attr(dt, "mean", da)
+  jaid::set_attr(dt, "longer", dc)
   jaid::set_attr(df, "class", old_class)
   return(dt[])
 }
@@ -103,14 +80,48 @@ longer.alr.data <- function(data, ...) {
 #' @export
 mean.alr.data <- function(x, ...) {
   jaid::assert_class(x, "alr.data")
-  attr(x, "mean")
+  grp_elp_var <- c(attr(x, "group_var"), attr(x, "elapsed_var"))
+  clr <- lr <- NULL
+  old_class <- class(x)
+  jaid::set_dt(x)
+  z <- x[, .(
+    n_sample   = .N,
+    lr_mean    = mean(lr),
+    lr_se      = mean(lr) / sqrt(.N),
+    clr_mean   = mean(clr),
+    clr_se     = mean(clr) / sqrt(.N),
+    lr_se_lwr  = mean(lr)  - mean(lr)  / sqrt(.N),
+    lr_se_upp  = mean(lr)  + mean(lr)  / sqrt(.N),
+    clr_se_lwr = mean(clr) - mean(clr) / sqrt(.N),
+    clr_se_upp = mean(clr) + mean(clr) / sqrt(.N)
+  ), keyby = grp_elp_var]
+  jaid::set_attr(z, "class", c("alr.data.mean", old_class))
+  jaid::set_attr(x, "class", old_class)
+  return(z)
 }
 
 #' @method median alr.data
 #' @export
 median.alr.data <- function(x, ...) {
   jaid::assert_class(x, "alr.data")
-  attr(x, "median")
+  grp_elp_var <- c(attr(x, "group_var"), attr(x, "elapsed_var"))
+  clr <- lr <- NULL
+  old_class <- class(x)
+  jaid::set_dt(x)
+  z <- x[, .(
+    n_sample   = .N,
+    lr_median  = median(lr),
+    lr_se      = median(lr) / sqrt(.N),
+    clr_median = median(clr),
+    clr_se     = median(clr) / sqrt(.N),
+    lr_se_lwr  = median(lr)  - median(lr)  / sqrt(.N),
+    lr_se_upp  = median(lr)  + median(lr)  / sqrt(.N),
+    clr_se_lwr = median(clr) - median(clr) / sqrt(.N),
+    clr_se_upp = median(clr) + median(clr) / sqrt(.N)
+  ), keyby = grp_elp_var]
+  jaid::set_attr(z, "class", c("alr.data.median", old_class))
+  jaid::set_attr(x, "class", old_class)
+  return(z)
 }
 
 #' Actual loss ratio by each UY months
