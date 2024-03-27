@@ -168,15 +168,15 @@ plot.alr.data <- function(x, group_var, period_var = "uym", elapsed_var = "elpm"
                           scales = c("fixed", "free_y", "free_x", "free"),
                           theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data")
-  group_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
-  period_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
-  elapsed_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
+  grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
+  prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
+  elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
   jaid::has_len(prd_var, error_raise = TRUE)
   jaid::has_len(elp_var, error_raise = TRUE)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  alr_uym_plot(x = x, group_var = !!group_var, period_var = !!period_var,
-               elapsed_var = !!elapsed_var, scales = scales, theme = theme)
+  alr_uym_plot(x = x, group_var = !!grp_var, period_var = !!prd_var,
+               elapsed_var = !!elp_var, scales = scales, theme = theme)
 }
 
 #' Mean of actual cumulative loss ratio
