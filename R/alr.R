@@ -185,7 +185,6 @@ plot.alr.data <- function(x, group_var, period_var = "uym", elapsed_var = "elpm"
 #'
 #' @param x an alr.data object
 #' @param group_var a name of the group variable
-#' @param period_var a name of the period variable ("uym", "uy")
 #' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
 #' @param color_type a string of color type, base and deep
 #' @param scales Should `scales` be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?
@@ -249,7 +248,6 @@ plot.alr.data.mean <- function(x, group_var, elapsed_var = "elpm",
 #'
 #' @param x an alr.data object
 #' @param group_var a name of the group variable
-#' @param period_var a name of the period variable ("uym", "uy")
 #' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
 #' @param color_type a string of color type, base and deep
 #' @param scales Should `scales` be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?

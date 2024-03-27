@@ -28,8 +28,6 @@ alr_mean_plot(
 \item{theme}{a string specifying a ggshort theme function ("view", "save", "shiny")}
 
 \item{...}{ggshort theme arguments}
-
-\item{period_var}{a name of the period variable ("uym", "uy")}
 }
 \value{
 a ggplot object
