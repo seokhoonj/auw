@@ -330,7 +330,7 @@ alr_comp_plot <- function(df, elapsed_num, period_var = "uym", elapsed_var = "el
   cprofit <- value <- NULL
   g1 <- ggbar(dm, x = !!period, y = value, fill = cprofit) +
     stat_mean_hline(aes(x = !!period, y = value, fill = NULL)) +
-    geom_hline(yintercept = 1, color = "black", linetype = "dashed") +
+    geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
     scale_pair_fill_manual(dm[["cprofit"]], pair_levels = c("pos", "neg")) +
     coord_flip() +
     ylab("cum loss ratio") +
