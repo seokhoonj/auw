@@ -329,7 +329,7 @@ alr_comp_plot <- function(df, elapsed_num, period_var = "uym", elapsed_var = "el
   dm <- dm[dm[[elapsed_var]] == elapsed_num,]
   cprofit <- value <- NULL
   g1 <- ggbar(dm, x = !!period, y = value, fill = cprofit) +
-    geom_hline_mean(aes(x = !!period, y = value, fill = NULL)) +
+    stat_mean_hline(aes(x = !!period, y = value, fill = NULL)) +
     geom_hline(yintercept = 1, color = "black", linetype = "dashed") +
     scale_pair_fill_manual(dm[["cprofit"]], pair_levels = c("pos", "neg")) +
     coord_flip() +
@@ -344,7 +344,7 @@ alr_comp_plot <- function(df, elapsed_num, period_var = "uym", elapsed_var = "el
              measure.vars = c("crp", "closs", "cmargin"))
   dc <- dc[dc[[elapsed_var]] == elapsed_num,]
   g2 <- ggbar(dc, x = !!period, y = value, fill = cprofit) +
-    geom_hline_mean(aes(x = !!period, y = value, fill = NULL)) +
+    stat_mean_hline(aes(x = !!period, y = value, fill = NULL)) +
     scale_pair_fill_manual(dm[["cprofit"]], pair_levels = c("pos", "neg")) +
     coord_flip() +
     xlab("") +
