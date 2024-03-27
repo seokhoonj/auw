@@ -136,6 +136,8 @@ alr_uym_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
   prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
+  jaid::has_len(prd_var, error_raise = TRUE)
+  jaid::has_len(elp_var, error_raise = TRUE)
   scales  <- match.arg(scales)
   theme   <- match.arg(theme)
 
@@ -169,6 +171,8 @@ plot.alr.data <- function(x, group_var, period_var = "uym", elapsed_var = "elpm"
   group_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
   period_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elapsed_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
+  jaid::has_len(prd_var, error_raise = TRUE)
+  jaid::has_len(elp_var, error_raise = TRUE)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
   alr_uym_plot(x = x, group_var = !!group_var, period_var = !!period_var,
@@ -190,16 +194,14 @@ plot.alr.data <- function(x, group_var, period_var = "uym", elapsed_var = "elpm"
 #' @return a ggplot object
 #'
 #' @export
-alr_mean_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
+alr_mean_plot <- function(x, group_var, elapsed_var = "elpm",
                           color_type = c("base", "deep"),
                           scales = c("fixed", "free_y", "free_x", "free"),
                           theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data.mean")
   elapsed <- rlang::ensym(elapsed_var)
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
-  prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
-  jaid::has_len(prd_var, error_raise = TRUE)
   jaid::has_len(elp_var, error_raise = TRUE)
   color_type <- match.arg(color_type)
   scales <- match.arg(scales)
@@ -226,21 +228,18 @@ alr_mean_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm"
 
 #' @method plot alr.data.mean
 #' @export
-plot.alr.data.mean <- function(x, group_var, period_var = "uym",
-                               elapsed_var = "elpm",
+plot.alr.data.mean <- function(x, group_var, elapsed_var = "elpm",
                                color_type = c("base", "deep"),
                                scales = c("fixed", "free_y", "free_x", "free"),
                                theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data.mean")
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
-  prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
-  jaid::has_len(prd_var, error_raise = TRUE)
   jaid::has_len(elp_var, error_raise = TRUE)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  alr_mean_plot(x = x, group_var = !!grp_var, period_var = !!prd_var,
-                elapsed_var = !!elp_var, scales = scales, theme = theme)
+  alr_mean_plot(x = x, group_var = !!grp_var, elapsed_var = !!elp_var,
+                scales = scales, theme = theme)
 }
 
 
@@ -259,17 +258,14 @@ plot.alr.data.mean <- function(x, group_var, period_var = "uym",
 #' @return a ggplot object
 #'
 #' @export
-alr_median_plot <- function(x, group_var, period_var = "uym",
-                            elapsed_var = "elpm",
+alr_median_plot <- function(x, group_var, elapsed_var = "elpm",
                             color_type = c("base", "deep"),
                             scales = c("fixed", "free_y", "free_x", "free"),
                             theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data.median")
   elapsed <- rlang::ensym(elapsed_var)
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
-  prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
-  jaid::has_len(prd_var, error_raise = TRUE)
   jaid::has_len(elp_var, error_raise = TRUE)
   color_type <- match.arg(color_type)
   scales <- match.arg(scales)
@@ -296,23 +292,19 @@ alr_median_plot <- function(x, group_var, period_var = "uym",
 
 #' @method plot alr.data.median
 #' @export
-plot.alr.data.median <- function(x, group_var, period_var = "uym",
-                                 elapsed_var = "elpm",
+plot.alr.data.median <- function(x, group_var, elapsed_var = "elpm",
                                  color_type = c("base", "deep"),
                                  scales = c("fixed", "free_y", "free_x", "free"),
                                  theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data.median")
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
-  prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
-  jaid::has_len(prd_var, error_raise = TRUE)
   jaid::has_len(elp_var, error_raise = TRUE)
   color_type <- match.arg(color_type)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  alr_median_plot(x = x, group_var = !!grp_var, period_var = !!prd_var,
-                  elapsed_var = !!elp_var, color_type = color_type,
-                  scales = scales, theme = theme)
+  alr_median_plot(x = x, group_var = !!grp_var, elapsed_var = !!elp_var,
+                  color_type = color_type, scales = scales, theme = theme)
 }
 
 #' Compare actual cumulative loss ratio plot
@@ -332,8 +324,8 @@ alr_comp_plot <- function(df, elapsed_num, period_var = "uym", elapsed_var = "el
   jaid::assert_class(df, "data.frame")
   period <- rlang::ensym(period_var)
   elapsed <- rlang::ensym(elapsed_var)
-  prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
-  elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
+  prd_var <- jaid::match_cols(df, sapply(rlang::enexpr(period_var), rlang::as_name))
+  elp_var <- jaid::match_cols(df, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
   jaid::has_len(prd_var, error_raise = TRUE)
   jaid::has_len(elp_var, error_raise = TRUE)
   theme <- match.arg(theme)

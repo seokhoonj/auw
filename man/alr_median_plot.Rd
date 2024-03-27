@@ -7,7 +7,6 @@
 alr_median_plot(
   x,
   group_var,
-  period_var = "uym",
   elapsed_var = "elpm",
   color_type = c("base", "deep"),
   scales = c("fixed", "free_y", "free_x", "free"),
@@ -20,8 +19,6 @@ alr_median_plot(
 
 \item{group_var}{a name of the group variable}
 
-\item{period_var}{a name of the period variable ("uym", "uy")}
-
 \item{elapsed_var}{a name of the elapsed variable ("elpm", "elp")}
 
 \item{color_type}{a string of color type, base and deep}
@@ -31,6 +28,8 @@ alr_median_plot(
 \item{theme}{a string specifying a ggshort theme function ("view", "save", "shiny")}
 
 \item{...}{ggshort theme arguments}
+
+\item{period_var}{a name of the period variable ("uym", "uy")}
 }
 \value{
 a ggplot object
