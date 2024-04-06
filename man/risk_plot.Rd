@@ -35,7 +35,7 @@ risk_plot(
 \item{scales}{Should \code{scales} be fixed ("\code{fixed}", the default), free ("\code{free}"), or free in one
 dimension ("\code{free_x}", "\code{free_y}")?}
 
-\item{theme}{a string specifying a ggshort theme function ("view", "save", "shiny")}
+\item{theme}{a string specifying a \code{\link[=match_theme]{match_theme()}} function ("view", "save", "shiny")}
 }
 \value{
 a ggplot object

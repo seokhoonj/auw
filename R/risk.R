@@ -11,7 +11,7 @@
 #' @param nrow,ncol Number of rows and columns.
 #' @param scales Should `scales` be fixed ("`fixed`", the default), free ("`free`"), or free in one
 #' dimension ("`free_x`", "`free_y`")?
-#' @param theme a string specifying a ggshort theme function ("view", "save", "shiny")
+#' @param theme a string specifying a [match_theme()] function ("view", "save", "shiny")
 #' @return a ggplot object
 #'
 #' @examples
@@ -60,7 +60,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
 
   fun <- if (logscale) log else force
 
-  g <- ggline(risk_info, x = age, y = fun(rate), color = gender) +
+  g <- ggline(risk_info, x = age, y = rate, color = gender) +
     list(if (max_label) {
       geom_label(data = risk_info_b, aes(label = label),
                  family = label_family, colour = "black", alpha = .3,
@@ -68,11 +68,14 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
     }) +
     scale_pair_color_manual(risk_info$gender) +
     scale_x_continuous(n.breaks = floor(jaid::unilen(risk_info$age)/age_interval)) +
-    scale_y_continuous(labels = function(x)
-      sprintf("%.4f", if (!logscale) x else exp(x))) +
+    list(if (logscale) {
+      scale_y_log10(labels = function(x) sprintf("%.4f", x))
+    } else {
+      scale_y_continuous(labels = function(x) sprintf("%.4f", x))
+    }) +
     facet_wrap(~ risk, nrow = nrow, ncol = ncol, scales = scales) +
     ylab(if (!logscale) "rate" else "log(rate)") +
-    ggshort_theme(theme = theme)
+    match_theme(theme = theme)
 
   jaid::set_attr(risk_info, "class", old_class)
   return(g)

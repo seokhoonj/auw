@@ -87,7 +87,7 @@ summary.ir.data <- function(object, ...) {
 #' @param color_type a string specifying a pair_color_type ("base", "deep")
 #' @param scales Should scales be fixed ("fixed", the default), free ("free"),
 #' or free in one dimension ("free_x", "free_y")?
-#' @param theme a string specifying a ggshort theme function ("view", "save", "shiny")
+#' @param theme a string specifying a [match_theme()] function ("view", "save", "shiny")
 #' @return a ggplot object
 #'
 #' @examples
@@ -120,7 +120,7 @@ irplot <- function(x, color_type = c("base", "deep"),
         ) +
         facet_wrap(~ gender) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, x.angle = 90, y.size = 0)
+        match_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (jaid::has_cols(dt, "gender") & !jaid::has_cols(dt, "age_band"))
     return(
@@ -129,7 +129,7 @@ irplot <- function(x, color_type = c("base", "deep"),
           scale_pair_fill_manual(dt$decl, color_type = color_type)
         ) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, y.size = 0)
+        match_theme(theme = theme, y.size = 0)
     )
   if (!jaid::has_cols(dt, "gender") & jaid::has_cols(dt, "age_band"))
     return(
@@ -138,7 +138,7 @@ irplot <- function(x, color_type = c("base", "deep"),
           scale_pair_fill_manual(dt$decl, color_type = color_type)
         ) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, x.angle = 90, y.size = 0)
+        match_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (!jaid::has_cols(dt, "gender") & !jaid::has_cols(dt, "age_band"))
     return(
@@ -147,7 +147,7 @@ irplot <- function(x, color_type = c("base", "deep"),
           scale_pair_fill_manual(dt$decl, color_type = color_type)
         ) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, y.size = 0)
+        match_theme(theme = theme, y.size = 0)
     )
 }
 
@@ -229,7 +229,7 @@ get_rel_risk <- function(x, decl_vs = c("0", "1"), threshold = .975) {
 #' @param x a rr object
 #' @param logscale a boolean specifying a log scale
 #' @param scales Should `scales` be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?
-#' @param theme a string specifying a ggshort theme function ("view", "save", "shiny")
+#' @param theme a string specifying a [match_theme()] function ("view", "save", "shiny")
 #' @return a ggplot object
 #'
 #' @examples
@@ -250,7 +250,7 @@ rrplot <- function(x, logscale = FALSE,
   scales <- match.arg(scales)
   x$label <- sprintf("%s\n%.2f\n(%s)", ifelse(!x$reject == 1, "N.E.", "") , x$rr, x$tp)
   if (logscale) {
-    x$rr <- log(x$rr)
+    # x$rr <- log(x$rr)
     title <- paste(title, "(log scale)")
   }
   ymax <- max(x$rr, na.rm = TRUE) * 1.3
@@ -259,30 +259,34 @@ rrplot <- function(x, logscale = FALSE,
     return(
       ggbar(data = x, x = age_band, y = rr, ymax = ymax, label = label,
             label_size = 3, label_vjust = -.25) +
+        list(if (logscale) scale_y_log10()) +
         facet_wrap(~ gender, scales = scales) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, x.angle = 90, y.size = 0)
+        match_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (jaid::has_cols(x, "gender") & !jaid::has_cols(x, "age_band"))
     return(
       ggbar(data = x, x = gender, y = rr, ymax = ymax, label = label,
             label_size = 3, label_vjust = -.25) +
+        list(if (logscale) scale_y_log10()) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, y.size = 0)
+        match_theme(theme = theme, y.size = 0)
     )
   if (!jaid::has_cols(x, "gender") & jaid::has_cols(x, "age_band"))
     return(
       ggbar(data = x, x = age_band, y = rr, ymax = ymax, label = label,
             label_size = 3, label_vjust = -.25) +
+        list(if (logscale) scale_y_log10()) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, x.angle = 90, y.size = 0)
+        match_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (!jaid::has_cols(x, "gender") & !jaid::has_cols(x, "age_band"))
     return(
       ggbar(data = x, x = "cohort data", y = rr, ymax = ymax, label = label,
             label_size = 3, label_vjust = -.25) +
+        list(if (logscale) scale_y_log10()) +
         labs(title = title, subtitle = subtitle) +
-        ggshort_theme(theme = theme, y.size = 0)
+        match_theme(theme = theme, y.size = 0)
     )
 }
 

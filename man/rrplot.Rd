@@ -18,7 +18,7 @@ rrplot(
 
 \item{scales}{Should \code{scales} be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?}
 
-\item{theme}{a string specifying a ggshort theme function ("view", "save", "shiny")}
+\item{theme}{a string specifying a \code{\link[=match_theme]{match_theme()}} function ("view", "save", "shiny")}
 }
 \value{
 a ggplot object
