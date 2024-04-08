@@ -13,7 +13,7 @@ risk_plot(
   age_interval = 10,
   nrow = NULL,
   ncol = NULL,
-  scales = "free_y",
+  scales = "fixed",
   theme = c("view", "save", "shiny")
 )
 }
