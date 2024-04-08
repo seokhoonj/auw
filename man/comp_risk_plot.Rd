@@ -55,5 +55,7 @@ Compare two risk rates.
 }
 \examples{
 # compare two risk rates
+\dontrun{
+comp_risk_plot(risk_info, risk1, risk2)}
 
 }

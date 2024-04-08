@@ -12,6 +12,7 @@
 #' @param scales Should `scales` be fixed ("`fixed`", the default), free ("`free`"), or free in one
 #' dimension ("`free_x`", "`free_y`")?
 #' @param theme a string specifying a [match_theme()] function ("view", "save", "shiny")
+#' @param ... arguments passed on to (theme_view, theme_save, theme_shiny)
 #' @return a ggplot object
 #'
 #' @examples
@@ -22,7 +23,7 @@
 risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
                       label_family = "Comic Sans MS", age_interval = 10,
                       nrow = NULL, ncol = NULL, scales = "fixed",
-                      theme = c("view", "save", "shiny")) {
+                      theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(risk_info, "data.frame")
   jaid::assert_class(risk_info$gender, "factor")
   old_class <- class(risk_info)
@@ -69,7 +70,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
     scale_y_fun(labels = function(x) sprintf("%.4f", x)) +
     facet_wrap(~ risk, nrow = nrow, ncol = ncol, scales = scales) +
     ylab(if (!logscale) "rate" else "log(rate)") +
-    match_theme(theme = theme)
+    match_theme(theme = theme, ...)
 
   jaid::set_attr(risk_info, "class", old_class)
   return(g)
@@ -97,6 +98,8 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
 #'
 #' @examples
 #' # compare two risk rates
+#' \dontrun{
+#' comp_risk_plot(risk_info, risk1, risk2)}
 #'
 #' @export
 comp_risk_plot <- function(risk_info, risk1, risk2, plot = TRUE,

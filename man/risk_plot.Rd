@@ -14,7 +14,8 @@ risk_plot(
   nrow = NULL,
   ncol = NULL,
   scales = "fixed",
-  theme = c("view", "save", "shiny")
+  theme = c("view", "save", "shiny"),
+  ...
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ risk_plot(
 dimension ("\code{free_x}", "\code{free_y}")?}
 
 \item{theme}{a string specifying a \code{\link[=match_theme]{match_theme()}} function ("view", "save", "shiny")}
+
+\item{...}{arguments passed on to (theme_view, theme_save, theme_shiny)}
 }
 \value{
 a ggplot object
