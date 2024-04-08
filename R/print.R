@@ -8,7 +8,7 @@ reduce_rows <- function(x, n = 242L) {
 
 adjust_column_width <- function(x, hchar, align = c("right", "both", "left")) {
   align <- match.arg(align)
-  df <- reduce_rows(as.data.frame(x))
+  df <- reduce_rows(x)
   cols <- names(df)
   nchar_cols <- nchar(cols)
   notc_cols_no <- which(sapply(df, class) != "character")
@@ -34,7 +34,7 @@ adjust_column_width <- function(x, hchar, align = c("right", "both", "left")) {
 
 hprint <- function(x, hchar = 4, align = c("right", "both", "left")) {
   align <- match.arg(align)
-  df <- adjust_column_width(x, hchar = hchar, align = align)
+  df <- adjust_column_width(x = x, hchar = hchar, align = align)
   txt <- jaid::paste_list(df)
   cols <- colnames(df)
   cat(draw_line(), "\n")

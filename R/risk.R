@@ -38,8 +38,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
   }
   if (any(x == "all")) {
     risk_info <- risk_info[risk_info$grade <= 1,]
-  }
-  else {
+  } else {
     risk_info <- risk_info[risk_info$risk %chin% x,]
   }
   risk_info_s <- risk_info[!is.na(rate), .(max_rate = max(.SD)), .(risk, gender),
@@ -58,6 +57,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
   risk_info_b[, `:=`(age, -Inf)]
   risk_info_b[, `:=`(rate, Inf)]
 
+  scale_y_fun <- if (logscale) scale_y_log10 else scale_y_continuous
   g <- ggline(risk_info, x = age, y = rate, color = gender) +
     list(if (max_label) {
       geom_label(data = risk_info_b, aes(label = label),
@@ -66,11 +66,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
     }) +
     scale_pair_color_manual(risk_info$gender) +
     scale_x_continuous(n.breaks = floor(jaid::unilen(risk_info$age)/age_interval)) +
-    list(if (logscale) {
-      scale_y_log10(labels = function(x) sprintf("%.4f", x))
-    } else {
-      scale_y_continuous(labels = function(x) sprintf("%.4f", x))
-    }) +
+    scale_y_fun(labels = function(x) sprintf("%.4f", x)) +
     facet_wrap(~ risk, nrow = nrow, ncol = ncol, scales = scales) +
     ylab(if (!logscale) "rate" else "log(rate)") +
     match_theme(theme = theme)
