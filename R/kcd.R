@@ -166,4 +166,5 @@ set_kcd_name <- function(df, kcd_var, dots = TRUE, lang = c("ko", "en")) {
     df[copybook, on = kcd_var, (new_kcd_var) := en]
   }
   jaid::set_attr(df, "class", old_class)
+  invisible(df[])
 }
