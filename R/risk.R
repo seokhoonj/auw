@@ -17,7 +17,8 @@
 #'
 #' @examples
 #' # draw a risk rate plot
-#' \dontrun{risk_plot(risk_info)}
+#' \dontrun{
+#' risk_plot(risk_info)}
 #'
 #' @export
 risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
@@ -67,7 +68,12 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
     }) +
     scale_pair_color_manual(risk_info$gender) +
     scale_x_continuous(n.breaks = floor(jaid::unilen(risk_info$age)/age_interval)) +
-    scale_y_fun(labels = function(x) sprintf("%.4f", x)) +
+    scale_y_fun(labels = function(x) {
+    if (max(risk_info$rate, na.rm = TRUE) <= 1) {
+      sprintf("%.2f%%", x * 100)
+    } else {
+      sprintf("%.2f", x)
+    }}) +
     facet_wrap(~ risk, nrow = nrow, ncol = ncol, scales = scales) +
     ylab(if (!logscale) "rate" else "log(rate)") +
     match_theme(theme = theme, ...)

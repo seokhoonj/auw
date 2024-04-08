@@ -48,6 +48,7 @@ Draw a risk rate plot.
 }
 \examples{
 # draw a risk rate plot
-\dontrun{risk_plot(risk_info)}
+\dontrun{
+risk_plot(risk_info)}
 
 }
