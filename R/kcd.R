@@ -104,3 +104,66 @@ get_kcd <- function(x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
     invisible(df[[type[[1L]]]])
   }
 }
+
+#' Set kcd sub columns
+#'
+#' Set kcd sub columns.
+#'
+#' @param df a data.frame
+#' @param kcd_var a name of a kcd column
+#' @param digit a stop digit of a string vector
+#' @return no return values.
+#'
+#' @examples
+#' # Set kcd sub columns
+#' \dontrun{
+#' set_kcd_sub(df, kcd)}
+#'
+#' @export
+set_kcd_sub <- function(df, kcd_var, digit = c(3L, 2L, 1L)) {
+  has_ptr(df, error_raise = TRUE)
+  old_class <- class(df)
+  jaid::set_dt(df)
+  kcd_var <- jaid::match_cols(df, sapply(rlang::enexpr(kcd_var), rlang::as_name))
+  cols <- sprintf("%s%d", kcd_var, digit)
+  for (i in seq_along(cols))
+    data.table::set(df, j = cols[i], value = substr(df[[kcd_var]], 1L, digit[i]))
+  data.table::setcolorder(df, cols, after = kcd_var)
+  jaid::set_attr(df, "class", old_class)
+}
+
+#' Set kcd name
+#'
+#' Set kcd name (en, ko).
+#'
+#' @param df a data.frame
+#' @param kcd_var a name of a kcd column
+#' @param dots a logical whether a kcd column contains dots
+#' @param lang a string specifying language ("ko", "en")
+#' @return no return values.
+#'
+#' @examples
+#' # Set kcd sub columns
+#' \dontrun{
+#' set_kcd_sub(df, kcd)}
+#'
+#' @export
+set_kcd_name <- function(df, kcd_var, dots = TRUE, lang = c("ko", "en")) {
+  has_ptr(df, error_raise = TRUE)
+  old_class <- class(df)
+  jaid::set_dt(df)
+  copybook <- copy(kcd_book)
+  if (dots) jaid::rm_punct(copybook, kcd)
+  kcd_var <- jaid::match_cols(df, sapply(rlang::enexpr(kcd_var), rlang::as_name))
+  data.table::setnames(copybook, "kcd", kcd_var)
+  lang <- match.arg(lang)
+  new_kcd_var <- paste0(kcd_var, "_", lang)
+  en <- kcd <- ko <- NULL
+  if (lang == "ko") {
+    df[copybook, on = kcd_var, (new_kcd_var) := ko]
+  }
+  else if (lang == "en") {
+    df[copybook, on = kcd_var, (new_kcd_var) := en]
+  }
+  jaid::set_attr(df, "class", old_class)
+}
