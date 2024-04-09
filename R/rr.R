@@ -162,7 +162,7 @@ plot.ir <- function(x, color_type = c("base", "deep"),
   irplot(x = x, color_type = color_type, scales = scales, theme = theme)
 }
 
-#' Relative Risk
+#' Get relative risks
 #'
 #' Get relative risks from the data.rr object.
 #'
@@ -172,7 +172,7 @@ plot.ir <- function(x, color_type = c("base", "deep"),
 #' @return a data frame contains relative risks
 #'
 #' @export
-get_rel_risk <- function(x, decl_vs = c("0", "1"), threshold = .975) {
+get_rr <- function(x, decl_vs = c("0", "1"), threshold = .975) {
   jaid::assert_class(x, "ir")
   old_class <- class(x)
   decl_levels <- levels(x$decl)
