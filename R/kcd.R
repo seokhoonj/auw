@@ -168,3 +168,17 @@ set_kcd_name <- function(df, kcd_var, dots = TRUE, lang = c("ko", "en")) {
   jaid::set_attr(df, "class", old_class)
   invisible(df[])
 }
+
+#' Get reserved disease list
+#'
+#' Get reserved disease list.
+#'
+#' @return reserved disease list
+#'
+#' @export
+get_diz_list <- function() {
+  nms <- local(ls(), envir = .AUW_ENV)
+  diz <- lapply(nms, function(x) get(x, envir = .AUW_ENV))
+  names(diz) <- nms
+  return(diz)
+}

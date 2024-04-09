@@ -24,4 +24,3 @@
   assign("CIRRHOSIS"      , "K70[23]|K717|K74|K761", envir = .AUW_ENV) # 간경화
   assign("ACCIDENT"       , "[STV]|W[0-5]|W6[0-4]|W8[5-9]|W9[0-9]|X[0-24]|X5[15689]|X8[5-9]|X9|Y[0-2457]|Y3[0-46-9]|Y35[0-46-9]|Y8[0-4]", envir = .AUW_ENV)
 }
-
