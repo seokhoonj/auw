@@ -155,7 +155,7 @@ alr_uym_plot <- function(x, group_var, period_var = "uym",
   scales  <- match.arg(scales)
   theme   <- match.arg(theme)
 
-  to <- length(x[[elp_var]])
+  to <- jaid::unilen(x[[elp_var]])
   start <- min(x[[prd_var]])
   if (jaid::has_cols(x, c("uym", "elpm"))) {
     len <- seq(from = 0, to = to, by = 12)
