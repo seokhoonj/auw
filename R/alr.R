@@ -13,10 +13,10 @@
 get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
                          period_var = c("uym"), elapsed_var = c("elpm")) {
   jaid::has_ptr(df, error_raise = TRUE)
-  grp_var <- match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
-  val_var <- match_cols(df, sapply(rlang::enexpr(value_var), rlang::as_name))
-  prd_var <- match_cols(df, sapply(rlang::enexpr(period_var), rlang::as_name))
-  elp_var <- match_cols(df, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
+  grp_var <- jaid::match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
+  val_var <- jaid::match_cols(df, sapply(rlang::enexpr(value_var), rlang::as_name))
+  prd_var <- jaid::match_cols(df, sapply(rlang::enexpr(period_var), rlang::as_name))
+  elp_var <- jaid::match_cols(df, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
   jaid::has_len(val_var, error_raise = TRUE)
   jaid::has_len(prd_var, error_raise = TRUE)
   jaid::has_len(elp_var, error_raise = TRUE)
@@ -155,7 +155,7 @@ alr_uym_plot <- function(x, group_var, period_var = "uym",
   scales  <- match.arg(scales)
   theme   <- match.arg(theme)
 
-  to <- max(x[[elp_var]])
+  to <- length(x[[elp_var]])
   start <- min(x[[prd_var]])
   if (jaid::has_cols(x, c("uym", "elpm"))) {
     len <- seq(from = 0, to = to, by = 12)
