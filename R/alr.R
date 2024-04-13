@@ -132,18 +132,21 @@ median.alr.data <- function(x, ...) {
 #' @param group_var a name of the group variable
 #' @param period_var a name of the period variable ("uym", "uy")
 #' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
+#' @param index_var a name of the index variable ("clr", "closs", "crp")
 #' @param scales Should `scales` be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?
 #' @param theme a string specifying a [match_theme()] function ("view", "save", "shiny")
 #' @param ... [theme_view()], [theme_save()], [theme_shiny()] arguments
 #' @return a ggplot object
 #'
 #' @export
-alr_uym_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
+alr_uym_plot <- function(x, group_var, period_var = "uym",
+                         elapsed_var = "elpm", index_var = "clr",
                          scales = c("fixed", "free_y", "free_x", "free"),
                          theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data")
   period  <- rlang::ensym(period_var)
   elapsed <- rlang::ensym(elapsed_var)
+  index   <- rlang::ensym(index_var)
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
   prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
@@ -156,16 +159,17 @@ alr_uym_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
   start <- min(x[[prd_var]])
   if (jaid::has_cols(x, c("uym", "elpm"))) {
     len <- seq(from = 0, to = to, by = 12)
-    breaks <- add_mon(start, len)
+    breaks <- jaid::add_mon(start, len)
   }
   else if (jaid::has_cols(x, c("uy", "elp"))) {
     len <- seq(from = 0, to = to, by = 1)
     breaks <- start + len
   } else {
-    stop("The combinations (uym + elpm or uy + elp) are not found.", call. = FALSE)
+    stop("The combinations (uym + elpm or uy + elp) are not found.",
+         call. = FALSE)
   }
   clr <- NULL
-  ggline(data = x, x = !!elapsed, y = clr, group = !!period, color = !!period) +
+  ggline(data = x, x = !!elapsed, y = !!index, group = !!period, color = !!period) +
     scale_color_gradientn(colours = grDevices::rainbow(length(len)),
                           breaks = breaks) +
     geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
@@ -175,19 +179,23 @@ alr_uym_plot <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
 
 #' @method plot alr.data
 #' @export
-plot.alr.data <- function(x, group_var, period_var = "uym", elapsed_var = "elpm",
+plot.alr.data <- function(x, group_var, period_var = "uym",
+                          elapsed_var = "elpm", index_var = "clr",
                           scales = c("fixed", "free_y", "free_x", "free"),
                           theme = c("view", "save", "shiny"), ...) {
   jaid::assert_class(x, "alr.data")
   grp_var <- jaid::match_cols(x, sapply(rlang::enexpr(group_var), rlang::as_name))
   prd_var <- jaid::match_cols(x, sapply(rlang::enexpr(period_var), rlang::as_name))
   elp_var <- jaid::match_cols(x, sapply(rlang::enexpr(elapsed_var), rlang::as_name))
+  idx_var <- jaid::match_cols(x, sapply(rlang::enexpr(index_var), rlang::as_name))
   jaid::has_len(prd_var, error_raise = TRUE)
   jaid::has_len(elp_var, error_raise = TRUE)
+  jaid::has_len(idx_var, error_raise = TRUE)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
   alr_uym_plot(x = x, group_var = !!grp_var, period_var = !!prd_var,
-               elapsed_var = !!elp_var, scales = scales, theme = theme)
+               index_var = !!idx_var, elapsed_var = !!elp_var,
+               scales = scales, theme = theme)
 }
 
 #' Mean of actual cumulative loss ratio

@@ -9,6 +9,7 @@ alr_uym_plot(
   group_var,
   period_var = "uym",
   elapsed_var = "elpm",
+  index_var = "clr",
   scales = c("fixed", "free_y", "free_x", "free"),
   theme = c("view", "save", "shiny"),
   ...
@@ -22,6 +23,8 @@ alr_uym_plot(
 \item{period_var}{a name of the period variable ("uym", "uy")}
 
 \item{elapsed_var}{a name of the elapsed variable ("elpm", "elp")}
+
+\item{index_var}{a name of the index variable ("clr", "closs", "crp")}
 
 \item{scales}{Should \code{scales} be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?}
 
