@@ -17,6 +17,7 @@ Imports:
   data.table (>= 1.14.2),
   ggplot2 (>= 3.3.3),
   ggshort,
+  gridExtra(>= 2.3),
   jaid,
   rlang (>= 1.1.1),
   scales (>= 1.2.1),

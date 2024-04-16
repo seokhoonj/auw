@@ -6,6 +6,7 @@
 #' @importFrom data.table `:=` `.SD` `%chin%` address copy melt set setcolorder
 #' setnames setorder setorderv
 #' @importFrom grDevices rainbow
+#' @importFrom gridExtra grid.arrange
 #' @importFrom jaid add_mon del_pattern draw_line get_copied_dt get_pattern
 #' has_cols has_ptr match_cols paste_list paste_str paste_uni_str replace_na_with_empty
 #' replace_na_with_zero rm_cols rotate set_attr set_attr_class set_dt set_ptr
