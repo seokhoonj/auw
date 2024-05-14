@@ -20,7 +20,7 @@
 #' @export
 set_age_band <- function(df, age_var, interval = 5, right = FALSE,
                          col_nm = "age_band", cutoff = FALSE,
-                         label_type = c("close", "open.start", "open", "open.start")) {
+                         label_type = c("close", "open.start", "open", "open.end")) {
   jaid::assert_class(df, "data.frame")
   age_var <- rlang::as_name(rlang::enquo(age_var))
   label_type <- match.arg(label_type)
@@ -86,7 +86,7 @@ set_age_band <- function(df, age_var, interval = 5, right = FALSE,
 #' @export
 set_band <- function(df, var, breaks, interval = 5, right = FALSE,
                      col_nm, cutoff = FALSE,
-                     label_type = c("close", "open.start", "open", "open.start")) {
+                     label_type = c("close", "open.start", "open", "open.end")) {
   jaid::assert_class(df, "data.frame")
   var <- rlang::as_name(rlang::enquo(var))
   label_type <- match.arg(label_type)
