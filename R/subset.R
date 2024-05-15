@@ -69,7 +69,7 @@ subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
 #' @examples
 #' # subset cohort
 #' \dontrun{
-#' id_with_kcd_terms(cohort, id, list(age_band), kcd, sdate, edate, udate,
+#' id_with_kcd_terms(cohort, .(id, age_band), kcd, sdate, edate, udate,
 #'                   list(-60,  0, "I10"),
 #'                   list(-60,  0, "I2[0-5]|I6[0-9]|G46"),
 #'                   list(  0, 36, "I2[0-5]|I6[0-9]|G46"))}

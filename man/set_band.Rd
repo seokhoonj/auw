@@ -12,7 +12,7 @@ set_band(
   right = FALSE,
   col_nm,
   cutoff = FALSE,
-  label_type = c("close", "open.start", "open", "open.start")
+  label_type = c("close", "open.start", "open", "open.end")
 )
 }
 \arguments{
