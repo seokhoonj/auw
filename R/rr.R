@@ -40,7 +40,7 @@
 id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                                  udate, decl1 = NULL, decl2 = NULL, decl3 = NULL,
                                  excl = NULL, claim = NULL) {
-  jaid::has_ptr(df, error_raise = TRUE)
+  # jaid::has_ptr(df, error_raise = TRUE)
   id_group_var <- rlang::enexpr(id_group_var)
   kcd_var  <- rlang::as_name(rlang::enquo(kcd_var))
   from_var <- rlang::as_name(rlang::enquo(from_var))
@@ -49,7 +49,7 @@ id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                        excl = excl, claim = claim)
   dots <- dots[sapply(dots, function(x) !is.null(x))]
   old_class <- class(df)
-  jaid::set_dt(df)
+  # jaid::set_dt(df)
   dt <- id_with_kcd_terms(df, id_group_var = !!id_group_var,
                           kcd_var = !!kcd_var, from_var = !!from_var,
                           to_var = !!to_var, udate = udate, !!!dots)
@@ -68,14 +68,13 @@ id_with_rr_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
   jaid::set_attr(dt, "class", c("ir.data", old_class))
   jaid::set_attr_class(dt, "raw|summary\\.\\d", old_class)
   jaid::set_attr_class(dt, "summary$", c("ir", old_class))
-  jaid::set_attr(df, "class", old_class)
+  # jaid::set_attr(df, "class", old_class)
   return(dt)
 }
 
 #' @method summary ir.data
 #' @export
 summary.ir.data <- function(object, ...) {
-  jaid::assert_class(object, "ir.data")
   attr(object, "summary")
 }
 
@@ -179,7 +178,7 @@ get_rr <- function(x, decl_vs = c("0", "1"), threshold = .975) {
   if (length(setdiff(decl_vs, levels(x$decl))) > 0)
     stop("Invalid declaration levels")
   dt <- x[x$decl %in% decl_vs & x$excl == 0 & x$claim == 1,]
-  jaid::set_dt(dt)
+  # jaid::set_dt(dt)
   if (jaid::unilen(dt$decl) > 2)
     stop("Please select two types of declarations to calculate relative risk")
   group <- setdiff(names(dt), c("decl", "excl", "claim", "n", "nsum", "ratio"))

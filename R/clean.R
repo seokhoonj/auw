@@ -24,8 +24,8 @@ set_age_band <- function(df, age_var, interval = 5, right = FALSE,
   jaid::assert_class(df, "data.frame")
   age_var <- rlang::as_name(rlang::enquo(age_var))
   label_type <- match.arg(label_type)
-  old_class <- class(df)
-  jaid::set_dt(df)
+  # old_class <- class(df)
+  # jaid::set_dt(df)
   age <- df[[age_var]]
   mn <- floor(min(age)/interval) * interval
   if (!cutoff) {
@@ -61,7 +61,7 @@ set_age_band <- function(df, age_var, interval = 5, right = FALSE,
   levels(age_band) <- labels
   data.table::set(df, j = col_nm, value = ordered(age_band))
   data.table::setcolorder(df, col_nm, after = age_var)
-  jaid::set_attr(df, "class", old_class)
+  # jaid::set_attr(df, "class", old_class)
 }
 
 #' Set bands
@@ -91,7 +91,7 @@ set_band <- function(df, var, breaks, interval = 5, right = FALSE,
   var <- rlang::as_name(rlang::enquo(var))
   label_type <- match.arg(label_type)
   old_class <- class(df)
-  jaid::set_dt(df)
+  # jaid::set_dt(df)
   col <- df[[var]]
   mn <- floor(min(col)/interval) * interval
   if (missing(breaks)) {
@@ -131,5 +131,5 @@ set_band <- function(df, var, breaks, interval = 5, right = FALSE,
     col_nm <- sprintf("%s_band", var)
   data.table::set(df, j = col_nm, value = ordered(col_band))
   data.table::setcolorder(df, col_nm, after = var)
-  jaid::set_attr(df, "class", old_class)
+  # jaid::set_attr(df, "class", old_class)
 }

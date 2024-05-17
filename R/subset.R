@@ -19,32 +19,32 @@
 #' @export
 subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
                                start, end, ...) {
-  jaid::has_ptr(df, error_raise = TRUE)
+  # jaid::has_ptr(df, error_raise = TRUE)
   id_var   <- rlang::as_name(rlang::enquo(id_var))
   kcd_var  <- rlang::as_name(rlang::enquo(kcd_var))
   from_var <- rlang::as_name(rlang::enquo(from_var))
   to_var   <- rlang::as_name(rlang::enquo(to_var))
   dots <- rlang::list2(...)
-  old_class <- class(df)
-  dt <- jaid::get_copied_dt(df)
+  # old_class <- class(df)
+  # dt <- jaid::get_copied_dt(df)
   for (i in seq_along(dots)) {
     fdate <- jaid::add_mon(udate, start)
     tdate <- jaid::add_mon(udate, end)
     key <- jaid::get_pattern("^!", dots[[i]])
     diz <- jaid::del_pattern("^!", dots[[i]])
     if (key == "") {
-      dt <- dt[unique(dt[(dt[[to_var]] >= fdate & dt[[from_var]] < tdate) &
-                         (grepl(diz, dt[[kcd_var]], perl = TRUE)),
+      df <- df[unique(df[(df[[to_var]] >= fdate & df[[from_var]] < tdate) &
+                         (grepl(diz, df[[kcd_var]], perl = TRUE)),
                          .SD, .SDcols = id_var]), on = id_var]
     }
     else {
-      dt <- dt[!unique(dt[(dt[[to_var]] >= fdate & dt[[from_var]] < tdate) &
-                          (grepl(diz, dt[[kcd_var]], perl = TRUE)),
+      df <- df[!unique(df[(df[[to_var]] >= fdate & df[[from_var]] < tdate) &
+                          (grepl(diz, df[[kcd_var]], perl = TRUE)),
                           .SD, .SDcols = id_var]), on = id_var]
     }
   }
-  jaid::set_attr(dt, "class", old_class)
-  return(dt)
+  # jaid::set_attr(dt, "class", old_class)
+  return(df)
 }
 
 #' id with kcd terms
@@ -78,7 +78,7 @@ subset_id_with_kcd <- function(df, id_var, kcd_var, from_var, to_var, udate,
 id_with_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
                               udate, ...) {
   # class: ir.data (incidence rate data)
-  jaid::has_ptr(df, error_raise = TRUE)
+  # jaid::has_ptr(df, error_raise = TRUE)
   id_group_var <- jaid::match_cols(df, sapply(rlang::enexpr(id_group_var),
                                               rlang::as_name))
   id_var    <- id_group_var[1L]
@@ -87,7 +87,7 @@ id_with_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
   to_var    <- rlang::as_name(rlang::enquo(to_var))
   kcd_terms <- rlang::list2(...)
   old_class <- class(df)
-  jaid::set_dt(df)
+  # jaid::set_dt(df)
   n <- length(kcd_terms)
   id_list <- vector(mode = "list", length = n + 1L)
   id_list[[1L]] <- unique(df[, .SD, .SDcols = id_group_var])
@@ -133,6 +133,6 @@ id_with_kcd_terms <- function(df, id_group_var, kcd_var, from_var, to_var,
   smry <- data.table::copy(attr(z, "summary.1"))
   jaid::set_attr(z, "summary", smry)
   jaid::set_attr(z, "class", c("ir.data", old_class))
-  jaid::set_attr(df, "class", old_class)
+  # jaid::set_attr(df, "class", old_class)
   return(z)
 }

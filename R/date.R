@@ -15,8 +15,8 @@ split_date <- function(df, from_var, to_var, udate, all = TRUE,
                        verbose = TRUE) {
   from_var <- rlang::as_name(rlang::enquo(from_var))
   to_var <- rlang::as_name(rlang::enquo(to_var))
-  old_class <- class(df)
-  jaid::set_dt(df)
+  # old_class <- class(df)
+  # jaid::set_dt(df)
   for (i in seq_along(udate)) {
     tmp_e <- df[!(df[[from_var]] < udate[i] & df[[to_var]] >= udate[i])]
     tmp_a <- df[ (df[[from_var]] < udate[i] & df[[to_var]] >= udate[i])]
@@ -35,8 +35,8 @@ split_date <- function(df, from_var, to_var, udate, all = TRUE,
   if (verbose)
     cat("Please check stays or claim year, \nyou may have to re-calculate!\n")
   data.table::setorderv(dt, names(dt))
-  jaid::set_attr(dt, "class", old_class)
-  jaid::set_attr(df, "class", old_class)
+  # jaid::set_attr(dt, "class", old_class)
+  # jaid::set_attr(df, "class", old_class)
   return(dt)
 }
 

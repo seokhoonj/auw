@@ -149,9 +149,9 @@ set_kcd_sub <- function(df, kcd_var, digit = c(3L, 2L, 1L)) {
 #'
 #' @export
 set_kcd_name <- function(df, kcd_var, dots = TRUE, lang = c("ko", "en")) {
-  has_ptr(df, error_raise = TRUE)
+  # has_ptr(df, error_raise = TRUE)
   old_class <- class(df)
-  jaid::set_dt(df)
+  # jaid::set_dt(df)
   copybook <- copy(kcd_book)
   if (dots) jaid::rm_punct(copybook, kcd)
   kcd_var <- jaid::match_cols(df, sapply(rlang::enexpr(kcd_var), rlang::as_name))
@@ -165,7 +165,7 @@ set_kcd_name <- function(df, kcd_var, dots = TRUE, lang = c("ko", "en")) {
   else if (lang == "en") {
     df[copybook, on = kcd_var, (new_kcd_var) := en]
   }
-  jaid::set_attr(df, "class", old_class)
+  # jaid::set_attr(df, "class", old_class)
   invisible(df[])
 }
 

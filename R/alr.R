@@ -12,7 +12,7 @@
 #' @export
 get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
                          period_var = c("uym"), elapsed_var = c("elpm")) {
-  jaid::has_ptr(df, error_raise = TRUE)
+  # jaid::has_ptr(df, error_raise = TRUE)
   grp_var <- jaid::match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
   val_var <- jaid::match_cols(df, sapply(rlang::enexpr(value_var), rlang::as_name))
   prd_var <- jaid::match_cols(df, sapply(rlang::enexpr(period_var), rlang::as_name))
@@ -24,7 +24,7 @@ get_stat_alr <- function(df, group_var, value_var = c("loss", "rp"),
   grp_elp_var <- c(grp_var, elp_var)
   grp_prd_elp_var <- c(grp_var, prd_var, elp_var)
   old_class <- class(df)
-  jaid::set_dt(df)
+  # jaid::set_dt(df)
   closs <- clr <- cmargin <- cprofit <- crp <- loss <- lr <- n_sample <-
     profit <- rp <- NULL
   dn <- jaid::get_stat_by(df, group_var = !!grp_elp_var,
@@ -83,7 +83,7 @@ mean.alr.data <- function(x, ...) {
   grp_elp_var <- c(attr(x, "group_var"), attr(x, "elapsed_var"))
   clr <- lr <- NULL
   old_class <- class(x)
-  jaid::set_dt(x)
+  # jaid::set_dt(x)
   z <- x[, .(
     n_sample   = .N,
     lr_mean    = mean(lr),
@@ -107,7 +107,7 @@ median.alr.data <- function(x, ...) {
   grp_elp_var <- c(attr(x, "group_var"), attr(x, "elapsed_var"))
   clr <- lr <- NULL
   old_class <- class(x)
-  jaid::set_dt(x)
+  # jaid::set_dt(x)
   z <- x[, .(
     n_sample   = .N,
     lr_median  = median(lr),
@@ -120,7 +120,7 @@ median.alr.data <- function(x, ...) {
     clr_se_upp = median(clr) + median(clr) / sqrt(.N)
   ), keyby = grp_elp_var]
   jaid::set_attr(z, "class", c("alr.data.median", old_class))
-  jaid::set_attr(x, "class", old_class)
+  # jaid::set_attr(x, "class", old_class)
   return(z)
 }
 
