@@ -147,6 +147,8 @@ comp_risk_plot <- function(risk_info, risk1, risk2, plot = TRUE,
     g2 <- ggline(mr, x = age, y = rate, group = gender,
                  color = gender) +
       geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
+      stat_mean_hline(aes(group = gender, color = gender)) +
+      scale_x_continuous(n.breaks = floor(jaid::unilen(mn$age) / age_unit)) +
       scale_y_fun(n.breaks = floor(unilen(mr$age)/age_unit)) +
       scale_pair_color_manual(c(1, 2)) +
       ylab("ratio") +
