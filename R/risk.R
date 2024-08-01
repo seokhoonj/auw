@@ -9,8 +9,8 @@
 #' @param label_family a string specifying label font-family
 #' @param age_interval a numeric specifying an age interval for the x label (default: 10)
 #' @param nrow,ncol Number of rows and columns.
-#' @param scales Should `scales` be fixed ("`fixed`", the default), free ("`free`"), or free in one
-#' dimension ("`free_x`", "`free_y`")?
+#' @param scales Should `scales` be fixed (`"fixed"`, the default), free (`"free"`), or free in one
+#' dimension (`"free_x"`, `"free_y"`)?
 #' @param theme a string specifying a [match_theme()] function ("view", "save", "shiny")
 #' @param ... arguments passed on to (theme_view, theme_save, theme_shiny)
 #' @return a ggplot object
