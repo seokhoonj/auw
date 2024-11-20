@@ -16,10 +16,12 @@ get_inforce_period <- function(df, id_var, group_var, from_var, to_var, months =
   group_var <- jaid::match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
   from_var  <- jaid::match_cols(df, rlang::as_name(rlang::enquo(from_var)))
   to_var    <- jaid::match_cols(df, rlang::as_name(rlang::enquo(to_var)))
-  p <- jaid::mondiff(df[[from_var]], df[[to_var]])
-  df[, `:=`(period, p)]
+  all_vars  <- c(id_var, group_var, from_var, to_var)
+  dt <- data.table::copy(df[, .SD, .SDcols = all_vars])
+  p <- jaid::mondiff(dt[[from_var]], dt[[to_var]])
+  dt[, `:=`(period, p)]
   group_vars <- c("period", group_var)
-  inforce <- df[, .(n = uniqueN(.SD)), keyby = group_vars, .SDcols = id_var][order(-period)]
+  inforce <- dt[, .(n = uniqueN(.SD)), keyby = group_vars, .SDcols = id_var][order(-period)]
   inforce[, `:=`(n, cumsum(n)), keyby = group_var]
   inforce <- inforce[order(period)]
   inforce_add <- inforce[, .(period = min(period) - 1, n = max(n)),
@@ -29,9 +31,9 @@ get_inforce_period <- function(df, id_var, group_var, from_var, to_var, months =
     inforce_add[, `:=`(period, data.table::frank(period, ties.method = "first")),
                 keyby = group_var]
     inforce <- rbind(inforce_add, inforce)
-    setorderv(inforce, group_vars)
+    data.table::setorderv(inforce, group_vars)
   }
-  if (group > 1) {
+  if (months > 1) {
     inforce[, `:=`(period, (period - 1)%/%months + 1)]
     return(inforce[, .(n = mean(n)), keyby = group_vars])
   }
