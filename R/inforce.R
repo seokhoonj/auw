@@ -32,7 +32,7 @@ get_inforce_period <- function(df, id_var, group_var, from_var, to_var, months =
     setorderv(inforce, group_vars)
   }
   if (group > 1) {
-    inforce[, `:=`(period, (period - 1)%/%group + 1)]
+    inforce[, `:=`(period, (period - 1)%/%months + 1)]
     return(inforce[, .(n = mean(n)), keyby = group_vars])
   }
   return(inforce[])
