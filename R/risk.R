@@ -92,8 +92,8 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
 #' @param plot a logical whether to show a plot or not
 #' @param nrow,ncol Number of rows and columns.
 #' @param logscale a logical whether to use a log scale
-#' @param scales Should scales be fixed ("`fixed`", the default), free ("`free`"),
-#' or free in one dimension ("`free_x`","`free_y`")?
+#' @param scales Should scales be fixed (`"fixed"`, the default), free (`"free"`),
+#' or free in one dimension (`"free_x"`,`"free_y"`)?
 #' @param age_unit age interval unit to express
 #' @param widths a unit vector giving the height of each row or the widths of 3 columns
 #' (risk rate plot, ratio plot, legend)

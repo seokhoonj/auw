@@ -3,8 +3,8 @@
 #' @keywords internal
 #' @import ggplot2
 #' @import ggshort
-#' @importFrom data.table `:=` `.SD` `%chin%` address copy melt set setcolorder
-#' setnames setorder setorderv
+#' @importFrom data.table `:=` `.SD` `%chin%` address copy frank melt set
+#' setcolorder setnames setorder setorderv
 #' @importFrom grDevices rainbow
 #' @importFrom gridExtra grid.arrange
 #' @importFrom jaid add_mon del_pattern draw_line get_copied_dt get_pattern

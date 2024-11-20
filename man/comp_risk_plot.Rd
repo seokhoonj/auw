@@ -33,8 +33,8 @@ comp_risk_plot(
 
 \item{nrow, ncol}{Number of rows and columns.}
 
-\item{scales}{Should scales be fixed ("\code{fixed}", the default), free ("\code{free}"),
-or free in one dimension ("\code{free_x}","\code{free_y}")?}
+\item{scales}{Should scales be fixed (\code{"fixed"}, the default), free (\code{"free"}),
+or free in one dimension (\code{"free_x"},\code{"free_y"})?}
 
 \item{age_unit}{age interval unit to express}
 
