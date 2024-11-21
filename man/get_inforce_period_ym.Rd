@@ -7,7 +7,7 @@
 get_inforce_period_ym(df, id_var, group_var, from_var, to_var)
 }
 \arguments{
-\item{df}{a data.frame}
+\item{df}{a cohort data frame}
 
 \item{id_var}{a name of id variable}
 

@@ -44,7 +44,7 @@ get_inforce_period <- function(df, id_var, group_var, from_var, to_var, months =
 #'
 #' Get inforce statistic by year, month, period
 #'
-#' @param df a data.frame
+#' @param df a cohort data frame
 #' @param id_var a name of id variable
 #' @param group_var names of group variables
 #' @param from_var a name of start date variable
