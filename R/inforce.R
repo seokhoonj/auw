@@ -66,8 +66,8 @@ get_inforce_period_ym <- function(df, id_var, group_var, from_var, to_var) {
   ym_list <- jaid::seqvec(dm[[from_var]], dm[[to_var]], by = "month")
   times <- sapply(ym_list, length)
   inforce <- jaid::rep_row(dm, times)
-  inforce[, `:=`(ym, as.Date(unlist(ym_list), origin = "1970-01-01"))]
-  p <- jaid::mondiff(inforce[[from_var]], inforce[["uym"]])
+  inforce[, `:=`(cym, as.Date(unlist(ym_list), origin = "1970-01-01"))]
+  p <- jaid::mondiff(inforce[[from_var]], inforce[["cym"]])
   inforce[, `:=`(period, p)]
   inforce[, `:=`(uym, jaid::add_mon(cym, -period+1))]
   vars <- c(group_var, "uym", "cym", "period")
