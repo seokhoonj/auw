@@ -52,7 +52,7 @@ get_inforce_period <- function(df, id_var, group_var, from_var, to_var, months =
 #' @return a data frame
 #'
 #' @export
-get_inforce_ym_period <- function(df, id_var, group_var, from_var, to_var) {
+get_inforce_period_ym <- function(df, id_var, group_var, from_var, to_var) {
   id_var    <- jaid::match_cols(df, rlang::as_name(rlang::enquo(id_var)))
   group_var <- jaid::match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
   from_var  <- jaid::match_cols(df, rlang::as_name(rlang::enquo(from_var)))
@@ -67,9 +67,10 @@ get_inforce_ym_period <- function(df, id_var, group_var, from_var, to_var) {
   times <- sapply(ym_list, length)
   inforce <- jaid::rep_row(dm, times)
   inforce[, `:=`(ym, as.Date(unlist(ym_list), origin = "1970-01-01"))]
-  p <- jaid::mondiff(inforce[[from_var]], inforce[["ym"]])
+  p <- jaid::mondiff(inforce[[from_var]], inforce[["uym"]])
   inforce[, `:=`(period, p)]
-  vars <- c(group_var, "ym", "period")
+  inforce[, `:=`(uym, jaid::add_mon(cym, -period+1))]
+  vars <- c(group_var, "uym", "cym", "period")
   return(inforce[, .(n = sum(n)), keyby = vars])
 }
 
