@@ -95,6 +95,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
 #' @param scales Should scales be fixed (`"fixed"`, the default), free (`"free"`),
 #' or free in one dimension (`"free_x"`,`"free_y"`)?
 #' @param age_unit age interval unit to express
+#' @param title a string specifying title
 #' @param widths a unit vector giving the height of each row or the widths of 3 columns
 #' (risk rate plot, ratio plot, legend)
 #' @param heights a unit vector giving the height of 2 row (top and plot)
@@ -110,7 +111,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
 #' @export
 comp_risk_plot <- function(risk_info, risk1, risk2, plot = TRUE,
                            logscale = FALSE, nrow = NULL, ncol = NULL,
-                           scales = "fixed", age_unit = 10,
+                           scales = "fixed", age_unit = 10, title = NULL,
                            widths = c(5, 3, 2), heights = c(2, 8),
                            theme = c("view", "save", "shiny"), ...) {
   x <- risk_info[risk_info$risk == risk1,]
@@ -155,7 +156,7 @@ comp_risk_plot <- function(risk_info, risk1, risk2, plot = TRUE,
       facet_wrap(~ risk) +
       match_theme(theme = theme, ...)
     legend <- get_legend(g1)
-    top <- bquote("Risk Ratio = " ~ frac(.(risk1), .(risk2)))
+    top <- bquote(.(title) * " Risk Ratio = " * frac(.(risk1), .(risk2)))
     p <- grid_left_to_right(g1, g2, legend, widths = widths) |>
       add_top(top, fontsize = 12, heights = heights)
     p

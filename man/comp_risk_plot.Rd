@@ -14,6 +14,7 @@ comp_risk_plot(
   ncol = NULL,
   scales = "fixed",
   age_unit = 10,
+  title = NULL,
   widths = c(5, 3, 2),
   heights = c(2, 8),
   theme = c("view", "save", "shiny"),
@@ -37,6 +38,8 @@ comp_risk_plot(
 or free in one dimension (\code{"free_x"},\code{"free_y"})?}
 
 \item{age_unit}{age interval unit to express}
+
+\item{title}{a string specifying title}
 
 \item{widths}{a unit vector giving the height of each row or the widths of 3 columns
 (risk rate plot, ratio plot, legend)}
