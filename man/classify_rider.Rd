@@ -2,19 +2,22 @@
 % Please edit documentation in R/rider.R
 \name{classify_rider}
 \alias{classify_rider}
-\title{Classify riders}
+\title{Classify rider coverage}
 \usage{
 classify_rider(df, rider)
 }
 \arguments{
 \item{df}{A dataframe containing rider information.}
 
-\item{rider}{A string or symbol representing the column name to be categorized.}
+\item{rider}{A string or symbol representing the column name to be classified.}
 }
 \value{
 The input dataframe with two new columns: \code{coverage_type} and \code{risk_type}.
 }
 \description{
-This function assigns a coverage type (\code{coverage_type}) and a risk type (\code{risk_type})
-to a given rider column in a dataframe based on keyword matching.
+This function classifies a given rider column in a dataframe into
+a general coverage type (\code{coverage_type}) and a specific risk type (\code{risk_type}).
+}
+\details{
+If multiple categories match, they are combined as a comma-separated string.
 }
