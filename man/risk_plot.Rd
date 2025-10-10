@@ -9,7 +9,6 @@ risk_plot(
   x,
   logscale = FALSE,
   max_label = TRUE,
-  label_family = "Comic Sans MS",
   age_interval = 10,
   nrow = NULL,
   ncol = NULL,
@@ -19,36 +18,56 @@ risk_plot(
 )
 }
 \arguments{
-\item{risk_info}{a data frame specifying risk_rate}
+\item{risk_info}{A data frame containing at least the columns \code{risk_nm},
+\code{gender} (factor), \code{age} (numeric), and \code{rate} (numeric).}
 
-\item{x}{a string vector specifying risk}
+\item{x}{Character vector of risk names to include (matching \code{risk_nm}).
+If omitted, the function interactively prompts. Use \code{"all"} to include all.}
 
-\item{logscale}{a boolean specifying a log scale}
+\item{logscale}{Logical; if \code{TRUE}, use a log10 y-scale. Otherwise linear.}
 
-\item{max_label}{a boolean whether to draw a max label or not}
+\item{max_label}{Logical; if \code{TRUE}, draw labels for per-gender maxima within
+each \code{risk_nm} facet (showing \verb{max rate (age)}).}
 
-\item{label_family}{a string specifying label font-family}
+\item{age_interval}{Integer; controls the number of x-axis breaks by
+\code{floor(uniqueN(age) / age_interval)}. Default is \code{10}.}
 
-\item{age_interval}{a numeric specifying an age interval for the x label (default: 10)}
+\item{nrow, ncol}{Number of rows/columns passed to \code{ggplot2::facet_wrap()}.}
 
-\item{nrow, ncol}{Number of rows and columns.}
+\item{scales}{Facet scales: \code{"fixed"} (default), \code{"free"}, \code{"free_x"},
+or \code{"free_y"}. Passed to \code{facet_wrap()}.}
 
-\item{scales}{Should \code{scales} be fixed (\code{"fixed"}, the default), free (\code{"free"}), or free in one
-dimension (\code{"free_x"}, \code{"free_y"})?}
+\item{theme}{One of \code{"view"}, \code{"save"}, or \code{"shiny"}; forwarded to
+\code{ggshort::switch_theme()}.}
 
-\item{theme}{a string specifying a \code{\link[=match_theme]{match_theme()}} function ("view", "save", "shiny")}
-
-\item{...}{arguments passed on to (theme_view, theme_save, theme_shiny)}
+\item{...}{Additional arguments forwarded to \code{ggshort::switch_theme()}
+(e.g., \code{theme_view}, \code{theme_save}, \code{theme_shiny} options).}
 }
 \value{
-a ggplot object
+A \code{ggplot} object.
 }
 \description{
-Draw a risk rate plot.
+Draw line plots of risk rates by \code{age} and \code{gender}, faceted by \code{risk_nm}.
+Optionally annotate each facet with the maximum rate (and the \code{age} at which
+it occurs). Colors are provided by \code{ggshort::scale_color_pair_manual()}.
+}
+\details{
+\itemize{
+\item When \code{max_label = TRUE}, per-facet labels are assembled and drawn using
+\code{geom_label()} with \code{family = getOption("ggshort.font")}.
+\item If the maximum of \code{rate} is \verb{<= 1}, y-axis labels are formatted as percent;
+otherwise shown on the raw scale (or log-scale if \code{logscale = TRUE}).
+}
 }
 \examples{
-# draw a risk rate plot
 \dontrun{
-risk_plot(risk_info)}
+# Basic usage (all risks)
+risk_plot(risk_info, x = "all")
+
+# Specific risks, log scale, custom facet layout
+risk_plot(risk_info,
+          x = c("risk rate 1", "risk rate 2"),
+          logscale = TRUE, nrow = 1, scales = "free_y")
+}
 
 }

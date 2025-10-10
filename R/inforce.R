@@ -12,13 +12,17 @@
 #'
 #' @export
 get_inforce_period <- function(df, id_var, group_var, from_var, to_var, months = 1L) {
-  id_var    <- jaid::match_cols(df, rlang::as_name(rlang::enquo(id_var)))
-  group_var <- jaid::match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
-  from_var  <- jaid::match_cols(df, rlang::as_name(rlang::enquo(from_var)))
-  to_var    <- jaid::match_cols(df, rlang::as_name(rlang::enquo(to_var)))
+  # id_var    <- instead::match_cols(df, rlang::as_name(rlang::enquo(id_var)))
+  # group_var <- instead::match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
+  # from_var  <- instead::match_cols(df, rlang::as_name(rlang::enquo(from_var)))
+  # to_var    <- instead::match_cols(df, rlang::as_name(rlang::enquo(to_var)))
+  id_var    <- capture_names(df, !!rlang::enquo(id_var))
+  group_var <- capture_names(df, !!rlang::enquo(group_var))
+  from_var  <- capture_names(df, !!rlang::enquo(from_var))
+  to_var    <- capture_names(df, !!rlang::enquo(to_var))
   all_vars  <- c(id_var, group_var, from_var, to_var)
   dt <- data.table::copy(df[, .SD, .SDcols = all_vars])
-  p <- jaid::mondiff(dt[[from_var]], dt[[to_var]])
+  p <- instead::mondiff(dt[[from_var]], dt[[to_var]])
   dt[, `:=`(period, p)]
   group_vars <- c("period", group_var)
   inforce <- dt[, .(n = uniqueN(.SD)), keyby = group_vars, .SDcols = id_var][order(-period)]
@@ -27,7 +31,7 @@ get_inforce_period <- function(df, id_var, group_var, from_var, to_var, months =
   inforce_add <- inforce[, .(period = min(period) - 1, n = max(n)),
                          keyby = group_var][period > 0]
   if (nrow(inforce_add) > 0) {
-    inforce_add <- jaid::rep_row(inforce_add, inforce_add$period)
+    inforce_add <- instead::rep_row(inforce_add, inforce_add$period)
     inforce_add[, `:=`(period, data.table::frank(period, ties.method = "first")),
                 keyby = group_var]
     inforce <- rbind(inforce_add, inforce)
@@ -53,23 +57,27 @@ get_inforce_period <- function(df, id_var, group_var, from_var, to_var, months =
 #'
 #' @export
 get_inforce_period_ym <- function(df, id_var, group_var, from_var, to_var) {
-  id_var    <- jaid::match_cols(df, rlang::as_name(rlang::enquo(id_var)))
-  group_var <- jaid::match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
-  from_var  <- jaid::match_cols(df, rlang::as_name(rlang::enquo(from_var)))
-  to_var    <- jaid::match_cols(df, rlang::as_name(rlang::enquo(to_var)))
+  # id_var    <- instead::match_cols(df, rlang::as_name(rlang::enquo(id_var)))
+  # group_var <- instead::match_cols(df, sapply(rlang::enexpr(group_var), rlang::as_name))
+  # from_var  <- instead::match_cols(df, rlang::as_name(rlang::enquo(from_var)))
+  # to_var    <- instead::match_cols(df, rlang::as_name(rlang::enquo(to_var)))
+  id_var    <- instead::capture_names(df, !!rlang::enquo(id_var))
+  group_var <- instead::capture_names(df, !!rlang::enquo(group_var))
+  from_var  <- instead::capture_names(df, !!rlang::enquo(from_var))
+  to_var    <- instead::capture_names(df, !!rlang::enquo(to_var))
   all_vars  <- c(id_var, group_var, from_var, to_var)
   group_vars <- c(group_var, from_var, to_var)
   date_vars <- c(from_var, to_var)
   dt <- data.table::copy(df[, .SD, .SDcols = all_vars])
   dt[, (date_vars) := lapply(.SD, bmonth), .SDcols = date_vars]
   dm <- dt[, .(n = uniqueN(.SD)), keyby = group_vars, .SDcols = id_var]
-  ym_list <- jaid::seqvec(dm[[from_var]], dm[[to_var]], by = "month")
+  ym_list <- instead::seq_list(dm[[from_var]], dm[[to_var]], by = "month")
   times <- sapply(ym_list, length)
-  inforce <- jaid::rep_row(dm, times)
+  inforce <- instead::rep_row(dm, times)
   inforce[, `:=`(cym, as.Date(unlist(ym_list), origin = "1970-01-01"))]
-  p <- jaid::mondiff(inforce[[from_var]], inforce[["cym"]])
+  p <- instead::mondiff(inforce[[from_var]], inforce[["cym"]])
   inforce[, `:=`(period, p)]
-  inforce[, `:=`(uym, jaid::add_mon(cym, -period+1))]
+  inforce[, `:=`(uym, instead::add_mon(cym, -period+1))]
   vars <- c(group_var, "uym", "cym", "period")
   return(inforce[, .(n = sum(n)), keyby = vars])
 }

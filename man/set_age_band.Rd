@@ -2,43 +2,21 @@
 % Please edit documentation in R/clean.R
 \name{set_age_band}
 \alias{set_age_band}
-\title{Set age bands}
+\title{Deprecated: set_age_band()}
 \usage{
-set_age_band(
-  df,
-  age_var,
-  interval = 5,
-  right = FALSE,
-  col_nm = "age_band",
-  cutoff = FALSE,
-  label_type = c("close", "open.start", "open", "open.end")
-)
+set_age_band(...)
 }
 \arguments{
-\item{df}{a data.frame}
-
-\item{age_var}{a name of column specifying an age column}
-
-\item{interval}{a numeric specifying an age interval (default: 5)}
-
-\item{right}{logical, indicating if the intervals should be closed on the right (and open on the left) or vice versa.}
-
-\item{col_nm}{a string specifying age band column name}
-
-\item{cutoff}{a logical to use maximum age cutoff}
-
-\item{label_type}{a string vector specifying label type ("close", "open", "open.start", "open.end")}
+\item{...}{Additional arguments passed to \code{\link[=add_age_band]{add_age_band()}}.}
 }
 \value{
-no return value
+Same return value as \code{\link[=add_age_band]{add_age_band()}}.
 }
 \description{
-Set age bands
-}
-\examples{
-\dontrun{
-df <- data.frame(age = sample(0:99, 20, replace = TRUE))
-set_ptr(df)
-set_age_band(df, age)}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
+Use \code{\link[=add_age_band]{add_age_band()}} instead.
+}
+\seealso{
+\code{\link[=add_age_band]{add_age_band()}}
 }

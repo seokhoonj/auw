@@ -4,14 +4,18 @@
 \alias{amt_plot}
 \title{Face amount mix plot}
 \usage{
-amt_plot(amt_mix, label_size = 4, theme = c("view", "save", "shiny"))
+amt_plot(
+  amt_mix,
+  label_args = list(size = 4),
+  theme = c("view", "save", "shiny")
+)
 }
 \arguments{
 \item{amt_mix}{a data.frame specifying a face amount mix by gender, age_band}
 
-\item{label_size}{a string specifying label size}
+\item{theme}{a string specifying a \code{\link[ggshort:switch_theme]{ggshort::switch_theme()}} function ("view", "save", "shiny")}
 
-\item{theme}{a string specifying a \code{\link[=match_theme]{match_theme()}} function ("view", "save", "shiny")}
+\item{label_size}{a string specifying label size}
 }
 \value{
 a gtable object

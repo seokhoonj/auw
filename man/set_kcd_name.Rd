@@ -2,28 +2,21 @@
 % Please edit documentation in R/kcd.R
 \name{set_kcd_name}
 \alias{set_kcd_name}
-\title{Set kcd name}
+\title{Deprecated: set_kcd_name()}
 \usage{
-set_kcd_name(df, kcd_var, dots = TRUE, lang = c("ko", "en"))
+set_kcd_name(...)
 }
 \arguments{
-\item{df}{a data.frame}
-
-\item{kcd_var}{a name of a kcd column}
-
-\item{dots}{a logical whether a kcd column contains dots}
-
-\item{lang}{a string specifying language ("ko", "en")}
+\item{...}{Additional arguments passed to \code{\link[=add_kcd_name]{add_kcd_name()}}.}
 }
 \value{
-no return values.
+Same return value as \code{\link[=add_kcd_name]{add_kcd_name()}}.
 }
 \description{
-Set kcd name (en, ko).
-}
-\examples{
-# Set kcd sub columns
-\dontrun{
-set_kcd_sub(df, kcd)}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
+Use \code{\link[=add_kcd_name]{add_kcd_name()}} instead.
+}
+\seealso{
+\code{\link[=add_kcd_name]{add_kcd_name()}}
 }

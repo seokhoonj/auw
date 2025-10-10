@@ -7,8 +7,18 @@
 get_diz_list()
 }
 \value{
-reserved disease list
+A named list of reserved-disease objects found in \code{.AUW_ENV}.
 }
 \description{
-Get reserved disease list.
+Return all reserved disease objects stored in the internal package environment.
+}
+\examples{
+\donttest{
+diz_list <- get_diz_list()
+names(diz_list)
+}
+
+}
+\seealso{
+\code{\link[=get_kcd]{get_kcd()}}, \code{\link[=add_kcd_name]{add_kcd_name()}}
 }

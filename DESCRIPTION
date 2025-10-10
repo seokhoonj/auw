@@ -4,26 +4,25 @@ Version: 0.0.0.9000
 Authors@R: 
     person(given = "Seokhoon", family = "Joo", role = c("aut", "cre"),
            email = "seokhoonj@gmail.com")
-Description: Loss ratio simulations considering both an actuarial perspective and 
+Description: A/E ratio simulations considering both an actuarial perspective and 
              an underwriting perspective.
-License: AGPL (>= 3)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 3.5.0)
+Depends: R (>= 4.1.1)
 Remotes:
   github::seokhoonj/ggshort,
-  github::seokhoonj/jaid
+  github::seokhoonj/instead,
+  github::seokhoonj/kosis
 Imports:
   data.table (>= 1.14.2),
   ggplot2 (>= 3.3.3),
-  ggshort,
-  gridExtra(>= 2.3),
-  jaid,
+  ggshort (>= 0.0.0.9001),
+  instead,
+  kosis,
+  lifecycle (>= 1.0.3),
   rlang (>= 1.1.1),
   scales (>= 1.2.1),
   stringr (>= 1.5.1)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3

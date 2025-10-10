@@ -1,29 +1,51 @@
-#' Get KCD codes
+#' Get KCD codes (search by code or term)
 #'
-#' Search for KCD codes in Korean or English
+#' Search the packaged KCD dictionary for matches in **code**, **Korean term**,
+#' or **English term**, and print a compact table of matches. Returns a character
+#' vector of the requested field.
 #'
-#' @param x a KCD code string or regular expression.
-#' @param lang a string specifying language to explain ("ko", "en")
-#' @param type a string sepcifying a type of a return value ("kcd", "ko", "en")
-#' @return a string vector
+#' @param x Character scalar. A KCD code string or a regular expression.
+#'   Matching is case-insensitive for codes and English; dots in codes can be
+#'   ignored (e.g., `"M51"` matches `"M51.0"`).
+#' @param lang Output language for the printed table header/terms; one of
+#'   `"ko"` or `"en"`. This does **not** affect the return type; see `type`.
+#' @param type Field to return as a character vector; one of `"kcd"`, `"ko"`,
+#'   or `"en"`.
+#'
+#' @return A character vector of the requested `type` (invisible). A formatted
+#'   table of matches is printed to the console as a side effect.
+#'
+#' @details
+#' The search proceeds in this order:
+#' 1) code column (`kcd`), allowing both dotted and undotted matches
+#' 2) Korean term column (`ko`)
+#' 3) English term column (`en`)
+#' The first non-empty match set is printed and returned.
 #'
 #' @examples
-#' # get a kcd code
-#' \donttest{get_kcd("M51")
+#' \donttest{
+#' # Search by exact/regex code
+#' get_kcd("M51")
 #' get_kcd("M51$|S33$")
-#' get_kcd("Diabetes")}
 #'
-#' # get a related kcd code vector
-#' \donttest{kcd <- get_kcd("M51$|S33$", type = "kcd")
-#' kcd}
+#' # Search by English term (case-insensitive)
+#' get_kcd("Diabetes", lang = "en", type = "kcd")
+#'
+#' # Get matched Korean terms as a character vector
+#' ko_terms <- get_kcd("M51$|S33$", type = "ko")
+#' }
+#'
+#' @seealso [add_kcd_sub()], [add_kcd_name()]
 #'
 #' @export
 get_kcd <- function(x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
   if (missing(x))
     stop("Please insert kcd code string or regular expressions.")
-  x <- toupper(x)
   lang <- match.arg(lang)
   type <- match.arg(type)
+
+  x <- toupper(x)
+
   if (any(grepl(x, auw::kcd_book$kcd) |
           grepl(x, gsub("\\.", "", auw::kcd_book$kcd, ignore.case = TRUE)))) {
     if (lang[[1L]] == "ko") {
@@ -105,80 +127,160 @@ get_kcd <- function(x, lang = c("ko", "en"), type = c("kcd", "ko", "en")) {
   }
 }
 
-#' Set kcd sub columns
+#' Add KCD subcode columns
 #'
-#' Set kcd sub columns.
+#' Create substring columns from a KCD code column (e.g., first 3/2/1 chars).
+#' Useful for grouping by broader sections of the code.
 #'
-#' @param df a data.frame
-#' @param kcd_var a name of a kcd column
-#' @param digit a stop digit of a string vector
-#' @return no return values.
+#' @param df A data frame / tibble / data.table.
+#' @param kcd_var Column containing KCD codes; **unquoted** name (e.g., `kcd`)
+#'   or **character scalar** (e.g., `"kcd"`).
+#' @param digit Integer vector of substring widths to extract (default `c(3,2,1)`).
+#'
+#' @return An object of the **same class as `df`**, with new columns named
+#'   `paste0(kcd_var, digit)` inserted after `kcd_var`.
 #'
 #' @examples
-#' # Set kcd sub columns
 #' \dontrun{
-#' set_kcd_sub(df, kcd)}
+#' df2 <- add_kcd_sub(df, kcd)         # unquoted
+#' df3 <- add_kcd_sub(df, "kcd", 3:1)  # character + custom widths
+#' }
 #'
+#' @seealso [add_kcd_name()], [get_kcd()]
 #' @export
-set_kcd_sub <- function(df, kcd_var, digit = c(3L, 2L, 1L)) {
-  has_ptr(df, error_raise = TRUE)
-  old_class <- class(df)
-  jaid::set_dt(df)
-  kcd_var <- jaid::match_cols(df, sapply(rlang::enexpr(kcd_var), rlang::as_name))
+add_kcd_sub <- function(df, kcd_var, digit = c(3L, 2L, 1L)) {
+  instead::assert_class(df, "data.frame")
+
+  env <- ensure_dt_env(df)
+  dt <- env$dt
+
+  kcd_var <- instead::capture_names(dt, !!rlang::enquo(kcd_var))
   cols <- sprintf("%s%d", kcd_var, digit)
+
   for (i in seq_along(cols))
-    data.table::set(df, j = cols[i], value = substr(df[[kcd_var]], 1L, digit[i]))
-  data.table::setcolorder(df, cols, after = kcd_var)
-  jaid::set_attr(df, "class", old_class)
+    data.table::set(
+      dt, j = cols[i], value = substr(dt[[kcd_var]], 1L, digit[i])
+    )
+  data.table::setcolorder(dt, cols, after = kcd_var)
+
+  env$restore(dt)
 }
 
-#' Set kcd name
+#' Add human-readable KCD names (ko/en)
 #'
-#' Set kcd name (en, ko).
+#' Join a codebook to append a human-readable KCD name column (`*_ko` or `*_en`)
+#' next to the KCD code column.
 #'
-#' @param df a data.frame
-#' @param kcd_var a name of a kcd column
-#' @param dots a logical whether a kcd column contains dots
-#' @param lang a string specifying language ("ko", "en")
-#' @return no return values.
+#' @param df A data frame / tibble / data.table.
+#' @param kcd_var Column with KCD codes; **unquoted** name (e.g., `kcd`)
+#'   or **character scalar** (e.g., `"kcd"`).
+#' @param dots Logical. If `TRUE` (default), treat dot-variants in codes as
+#'   equivalent (e.g., `"M51"` matches `"M51.0"`); implemented by removing
+#'   punctuation in the copybook before join.
+#' @param lang Language of the name column to add; one of `"ko"` or `"en"`.
+#'
+#' @return An object of the **same class as `df`**, with an added column named
+#'   `paste0(kcd_var, "_", lang)` containing the mapped term.
+#'
+#' @details
+#' A (right) join is performed against the internal KCD copybook. The copybook
+#' column is temporarily renamed to match `kcd_var` so that a named-equality
+#' join can be performed; the result is restored to the original class of `df`.
 #'
 #' @examples
-#' # Set kcd sub columns
 #' \dontrun{
-#' set_kcd_sub(df, kcd)}
+#' df2 <- add_kcd_name(df, kcd, lang = "ko")  # unquoted
+#' df3 <- add_kcd_name(df, "kcd", dots = TRUE, lang = "en")
+#' }
+#'
+#' @seealso [add_kcd_sub()], [get_kcd()]
 #'
 #' @export
-set_kcd_name <- function(df, kcd_var, dots = TRUE, lang = c("ko", "en")) {
-  # has_ptr(df, error_raise = TRUE)
-  old_class <- class(df)
-  # jaid::set_dt(df)
-  copybook <- copy(kcd_book)
-  if (dots) jaid::rm_punct(copybook, kcd)
-  kcd_var <- jaid::match_cols(df, sapply(rlang::enexpr(kcd_var), rlang::as_name))
-  data.table::setnames(copybook, "kcd", kcd_var)
+add_kcd_name <- function(df, kcd_var, dots = TRUE, lang = c("ko", "en")) {
+  instead::assert_class(df, "data.frame")
   lang <- match.arg(lang)
+
+  env <- instead::ensure_dt_env(df)
+  dt  <- env$dt
+
+  copybook <- copy(kcd_book)
+  if (dots) instead::rm_punct(copybook, kcd)
+
+  kcd_var <- instead::capture_names(dt, !!rlang::enquo(kcd_var))
+
+  data.table::setnames(copybook, "kcd", kcd_var)
   new_kcd_var <- paste0(kcd_var, "_", lang)
+
   en <- kcd <- ko <- NULL
   if (lang == "ko") {
-    df[copybook, on = kcd_var, (new_kcd_var) := ko]
+    dt[copybook, on = kcd_var, (new_kcd_var) := ko]
   }
   else if (lang == "en") {
-    df[copybook, on = kcd_var, (new_kcd_var) := en]
+    dt[copybook, on = kcd_var, (new_kcd_var) := en]
   }
-  # jaid::set_attr(df, "class", old_class)
-  invisible(df[])
+
+  env$restore(dt)
 }
 
 #' Get reserved disease list
 #'
-#' Get reserved disease list.
+#' Return all reserved disease objects stored in the internal package environment.
 #'
-#' @return reserved disease list
+#' @return A named list of reserved-disease objects found in `.AUW_ENV`.
+#'
+#' @examples
+#' \donttest{
+#' diz_list <- get_diz_list()
+#' names(diz_list)
+#' }
+#'
+#' @seealso [get_kcd()], [add_kcd_name()]
 #'
 #' @export
 get_diz_list <- function() {
   nms <- local(ls(), envir = .AUW_ENV)
   diz <- lapply(nms, function(x) get(x, envir = .AUW_ENV))
   names(diz) <- nms
-  return(diz)
+  diz
+}
+
+
+# Deprecated functions ----------------------------------------------------
+
+#' Deprecated: set_kcd_sub()
+#'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Use [add_kcd_sub()] instead.
+#'
+#' @param ... Additional arguments passed to [add_kcd_sub()].
+#'
+#' @return Same return value as [add_kcd_sub()].
+#'
+#' @seealso [add_kcd_sub()]
+#'
+#' @export
+set_kcd_sub <- function(...) {
+  lifecycle::deprecate_warn("0.0.0.9001", "set_kcd_sub()", "add_kcd_sub()")
+  add_kcd_sub(...)
+}
+
+#' Deprecated: set_kcd_name()
+#'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Use [add_kcd_name()] instead.
+#'
+#' @param ... Additional arguments passed to [add_kcd_name()].
+#'
+#' @return Same return value as [add_kcd_name()].
+#'
+#' @seealso [add_kcd_name()]
+#'
+#' @export
+set_kcd_name <- function(...) {
+  lifecycle::deprecate_warn("0.0.0.9001", "set_kcd_name()", "add_kcd_name()")
+  add_kcd_name(...)
 }

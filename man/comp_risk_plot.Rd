@@ -6,59 +6,74 @@
 \usage{
 comp_risk_plot(
   risk_info,
-  risk1,
-  risk2,
-  plot = TRUE,
+  x,
+  y,
+  age_unit = 10,
   logscale = FALSE,
+  scales = "fixed",
   nrow = NULL,
   ncol = NULL,
-  scales = "fixed",
-  age_unit = 10,
-  title = NULL,
-  widths = c(5, 3, 2),
-  heights = c(2, 8),
+  heights = c(8.5, 1.5),
+  widths = c(5, 3),
   theme = c("view", "save", "shiny"),
   ...
 )
 }
 \arguments{
-\item{risk_info}{a data frame specifying risk_rate}
+\item{risk_info}{A data frame containing at least the columns \code{risk_nm},
+\code{gender} (factor), \code{age} (numeric), and \code{rate} (numeric).}
 
-\item{risk1}{a string specifying risk 1}
+\item{x, y}{Character scalars; the two \code{risk_nm} values to compare.
+If omitted, the function interactively prompts for each.}
 
-\item{risk2}{a string specifying risk 2}
+\item{age_unit}{Integer; controls the number of breaks on the x-axis via
+\code{floor(uniqueN(age) / age_unit)}. Default is \code{10}.}
 
-\item{plot}{a logical whether to show a plot or not}
+\item{logscale}{Logical; if \code{TRUE}, use a log10 y-scale for both panels.}
 
-\item{logscale}{a logical whether to use a log scale}
+\item{scales}{Facet scales: \code{"fixed"} (default), \code{"free"}, \code{"free_x"},
+or \code{"free_y"}. Passed to \code{facet_wrap()}.}
 
-\item{nrow, ncol}{Number of rows and columns.}
+\item{nrow, ncol}{Number of rows/columns for faceting (used in the rate panel).}
 
-\item{scales}{Should scales be fixed (\code{"fixed"}, the default), free (\code{"free"}),
-or free in one dimension (\code{"free_x"},\code{"free_y"})?}
+\item{heights}{Numeric length-2 vector giving the relative heights for the
+stacked layout (top panels vs. legend). Default \code{c(8.5, 1.5)}.}
 
-\item{age_unit}{age interval unit to express}
+\item{widths}{Numeric length-2 vector giving the relative widths for the
+side-by-side panels (rate plot vs. ratio plot). Default \code{c(5, 3)}.}
 
-\item{title}{a string specifying title}
+\item{theme}{One of \code{"view"}, \code{"save"}, or \code{"shiny"}; forwarded to
+\code{ggshort::switch_theme()}.}
 
-\item{widths}{a unit vector giving the height of each row or the widths of 3 columns
-(risk rate plot, ratio plot, legend)}
-
-\item{heights}{a unit vector giving the height of 2 row (top and plot)}
-
-\item{theme}{a string specifying a ggshort theme function ("view", "save", "shiny")}
-
-\item{...}{arguments passed on to (theme_view, theme_save, theme_shiny)}
+\item{...}{Additional arguments forwarded to \code{ggshort::switch_theme()}.}
 }
 \value{
-no return values
+A \code{ggplot} object composed from grobs (legend extracted and stacked).
+The raw merged data (\code{dz}) is attached as \code{attr(p, "raw")}.
 }
 \description{
-Compare two risk rates.
+Plot two risk-rate series side-by-side (by \code{gender}) and their pointwise ratio
+(\code{risk_x / risk_y}) with reference lines. A shared legend is placed below,
+and an overall title like \verb{Risk Rate Ratio = risk_x / risk_y} is added.
+}
+\details{
+\itemize{
+\item The left panel shows two risk-rate lines (colored by \code{gender}, linetype by risk),
+faceted by \code{gender}. Colors use \code{ggshort::scale_color_pair_manual()}.
+\item The right panel shows the pointwise ratio \code{rate_x / rate_y} by \code{age},
+with a horizontal line at 1 (\code{geom_hline1()}) and a mean line
+(\code{stat_mean_hline()}), faceted by risk label.
+\item The plot title is constructed via \code{bquote("Risk Rate Ratio = " * frac(.(x), .(y)))}.
+}
 }
 \examples{
-# compare two risk rates
 \dontrun{
-comp_risk_plot(risk_info, risk1, risk2)}
+# Compare two risks with default theme
+comp_risk_plot(risk_info, x = "risk rate 1", y = "risk rate 2")
+
+# Free y-scales and log scale for the ratio panel
+comp_risk_plot(risk_info, x = "risk rate 1", y = "risk rate 2",
+               logscale = TRUE, scales = "free_y")
+}
 
 }

@@ -2,26 +2,21 @@
 % Please edit documentation in R/kcd.R
 \name{set_kcd_sub}
 \alias{set_kcd_sub}
-\title{Set kcd sub columns}
+\title{Deprecated: set_kcd_sub()}
 \usage{
-set_kcd_sub(df, kcd_var, digit = c(3L, 2L, 1L))
+set_kcd_sub(...)
 }
 \arguments{
-\item{df}{a data.frame}
-
-\item{kcd_var}{a name of a kcd column}
-
-\item{digit}{a stop digit of a string vector}
+\item{...}{Additional arguments passed to \code{\link[=add_kcd_sub]{add_kcd_sub()}}.}
 }
 \value{
-no return values.
+Same return value as \code{\link[=add_kcd_sub]{add_kcd_sub()}}.
 }
 \description{
-Set kcd sub columns.
-}
-\examples{
-# Set kcd sub columns
-\dontrun{
-set_kcd_sub(df, kcd)}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
+Use \code{\link[=add_kcd_sub]{add_kcd_sub()}} instead.
+}
+\seealso{
+\code{\link[=add_kcd_sub]{add_kcd_sub()}}
 }

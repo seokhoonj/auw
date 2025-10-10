@@ -1,5 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^Makefile$
 ^\.github$
 ^cran-comments\.md$
+^\.lintr$
+^\.Renviron$

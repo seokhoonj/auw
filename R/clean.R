@@ -1,135 +1,107 @@
-#' Set age bands
+#' Create age bands
 #'
-#' Set age bands
+#' A convenience wrapper around [add_band()] to generate categorical
+#' **age bands** from a numeric age column. The function creates an
+#' ordered factor column representing grouped age intervals.
 #'
-#' @param df a data.frame
-#' @param age_var a name of column specifying an age column
-#' @param interval a numeric specifying an age interval (default: 5)
-#' @param right logical, indicating if the intervals should be closed on the right (and open on the left) or vice versa.
-#' @param col_nm a string specifying age band column name
-#' @param cutoff a logical to use maximum age cutoff
-#' @param label_type a string vector specifying label type ("close", "open", "open.start", "open.end")
-#' @return no return value
+#' @param df A data.frame containing an age column.
+#' @param age_var Unquoted column name specifying the age variable.
+#' @param interval Numeric; the width of each age interval. Default: `5`.
+#' @param right Logical; whether intervals should be closed on the right
+#'   (and open on the left) or vice versa. Default: `FALSE`.
+#' @param col_nm String; name of the new age band column. Default `"age_band"`.
+#' @param cutoff Logical; if `TRUE`, ensures the maximum observed age
+#'   is included as an upper cutoff. Default: `FALSE`.
+#' @param label_style One of `"close"`, `"open"`, `"open.start"`, `"open.end"`;
+#'   controls how labels are displayed at boundaries:
+#'   - `"close"`: closed intervals like `"0-4"`, `"5-9"`.
+#'   - `"open"`: first/last open (e.g. "`-4`", "`95-`").
+#'   - `"open.start"`: only first open (e.g. "`-4`", "`5-9"`).
+#'   - `"open.end"`: only last open (e.g. "`95-`").
+#'
+#' @return The input `df`, augmented with a new ordered factor column
+#'   (by default `"age_band"`).
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' df <- data.frame(age = sample(0:99, 20, replace = TRUE))
-#' set_ptr(df)
-#' set_age_band(df, age)}
+#'
+#' # Default 5-year bands
+#' add_age_band(df, age)
+#'
+#' # Custom 10-year bands with open-ended labels
+#' add_age_band(df, age, interval = 10, label_style = "open.end")
+#' }
 #'
 #' @export
-set_age_band <- function(df, age_var, interval = 5, right = FALSE,
+add_age_band <- function(df, age_var, interval = 5, right = FALSE,
                          col_nm = "age_band", cutoff = FALSE,
-                         label_type = c("close", "open.start", "open", "open.end")) {
-  jaid::assert_class(df, "data.frame")
-  age_var <- rlang::as_name(rlang::enquo(age_var))
-  label_type <- match.arg(label_type)
-  # old_class <- class(df)
-  # jaid::set_dt(df)
-  age <- df[[age_var]]
-  mn <- floor(min(age)/interval) * interval
-  if (!cutoff) {
-    mx <- ceiling(max(age)/interval) * interval
-    if (max(age) == mx)
-      mx <- ceiling(max(age)/interval + 1) * interval
-    breaks <- seq(mn, mx, interval)
-  } else {
-    mx <- max(age) + 1
-    breaks <- seq(mn, mx, interval)
-    breaks <- sort(unique(c(breaks, mx)))
-    breaks <- breaks[breaks <= mx]
-  }
-  age_band <- cut(age, breaks = breaks, right = right, dig.lab = 5)
-
-  # labels
-  l <- levels(age_band)
-  r <- gregexpr("[0-9]+", l, perl = TRUE)
-  m <- regmatches(l, r)
-  s <- as.integer(sapply(m, function(x) x[1L]))
-  e <- as.integer(sapply(m, function(x) x[2L])) - 1
-  labels <- sprintf("%d-%d", s, e)
-
-  # label type
-  if (label_type == "open") {
-    labels[1L] <- jaid::get_pattern("-[0-9]+", labels[1L])
-    labels[length(labels)] <- jaid::get_pattern("[0-9]+-", labels[length(labels)])
-  } else if (label_type == "open.start") {
-    labels[1L] <- jaid::get_pattern("-[0-9]+", labels[1L])
-  } else if (label_type == "open.end") {
-    labels[length(labels)] <- jaid::get_pattern("[0-9]+-", labels[length(labels)])
-  }
-  levels(age_band) <- labels
-  data.table::set(df, j = col_nm, value = ordered(age_band))
-  data.table::setcolorder(df, col_nm, after = age_var)
-  # jaid::set_attr(df, "class", old_class)
+                         label_style = c("close", "open.start", "open", "open.end")) {
+  instead::assert_class(df, "data.frame")
+  label_style <- match.arg(label_style)
+  age_var <- instead::capture_names(df, !!rlang::enquo(age_var))
+  instead::add_band(df = df, num_var = age_var, interval = interval, right = right,
+                 col_nm = col_nm, cutoff = cutoff, label_style = label_style)
 }
 
-#' Set bands
+melt_kcd <- function(df, kcd_cols) {
+  assert_class(df, "data.frame")
+
+  env <- ensure_dt_env(df)
+  dt  <- env$dt
+
+  kcd_cols <- capture_names(dt, !!rlang::enquo(kcd_cols))
+
+  kcd_cols_all <- instead::regex_cols(dt, "^kcd[0-9]?$")
+  if (length(kcd_cols_all) == 0L)
+    stop("No kcd columns found. Expected columns like 'kcd', 'kcd1', 'kcd2'.",
+         call. = FALSE)
+
+  if (!identical(sort(kcd_cols), sort(kcd_cols_all))) {
+    missing <- setdiff(kcd_cols_all, kcd_cols)
+    extra   <- setdiff(kcd_cols, kcd_cols_all)
+    msg <- "Select all kcd columns"
+    if (length(missing))
+      msg <- paste0(msg, "; missing: ", paste(missing, collapse = ", "))
+    if (length(extra))
+      msg <- paste0(msg,  "; not-kcd: ", paste(extra,   collapse = ", "))
+    stop(msg, call. = FALSE)
+  }
+
+  id_cols <- instead::anti_cols(dt, kcd_cols)
+
+  dm <- data.table::melt(
+    data = dt,
+    id.vars = id_cols,
+    measure.vars = kcd_cols,
+    variable.name = "ord_kcd",
+    value.name = "kcd"
+  )
+
+  ord_raw <- sub("^kcd", "", dm$ord_kcd)
+  ord_int <- ifelse(nzchar(ord_raw), as.integer(ord_raw), 0L)
+  data.table::set(dm, j = "ord_kcd", value = ord_int)
+
+  env$restore(dm)
+}
+
+# Deprecated functions ----------------------------------------------------
+
+#' Deprecated: set_age_band()
 #'
-#' Set bands
+#' @description
+#' `r lifecycle::badge("deprecated")`
 #'
-#' @param df a data.frame
-#' @param var a name of column
-#' @param breaks either a numeric vector of two or more unique cut points or a single number (greater than or equal to 2) giving the number of intervals into which x is to be cut.
-#' @param interval a numeric specifying interval (default: 5)
-#' @param right logical, indicating if the intervals should be closed on the right (and open on the left) or vice versa.
-#' @param col_nm a string specifying a column name
-#' @param cutoff a logical to use maximum age cutoff
-#' @param label_type a string vector specifying label type ("close", "open", "open.start", "open.end")
-#' @return no return value
+#' Use [add_age_band()] instead.
 #'
-#' @examples
-#' \dontrun{
-#' df <- mtcars
-#' set_band(df, age)}
+#' @param ... Additional arguments passed to [add_age_band()].
+#'
+#' @return Same return value as [add_age_band()].
+#'
+#' @seealso [add_age_band()]
 #'
 #' @export
-set_band <- function(df, var, breaks, interval = 5, right = FALSE,
-                     col_nm, cutoff = FALSE,
-                     label_type = c("close", "open.start", "open", "open.end")) {
-  jaid::assert_class(df, "data.frame")
-  var <- rlang::as_name(rlang::enquo(var))
-  label_type <- match.arg(label_type)
-  old_class <- class(df)
-  # jaid::set_dt(df)
-  col <- df[[var]]
-  mn <- floor(min(col)/interval) * interval
-  if (missing(breaks)) {
-    if (!cutoff) {
-      mx <- ceiling(max(col)/interval) * interval
-      if (max(col) == mx)
-        mx <- ceiling(max(col)/interval + 1) * interval
-      breaks <- seq(mn, mx, interval)
-    } else {
-      mx <- max(col) + 1
-      breaks <- seq(mn, mx, interval)
-      breaks <- sort(unique(c(breaks, mx)))
-      breaks <- breaks[breaks <= mx]
-    }
-  }
-  col_band <- cut(col, breaks = breaks, right = right, dig.lab = 5)
-
-  # labels
-  l <- levels(col_band)
-  r <- gregexpr("[0-9]+", l, perl = TRUE)
-  m <- regmatches(l, r)
-  s <- as.integer(sapply(m, function(x) x[1L]))
-  e <- as.integer(sapply(m, function(x) x[2L])) - 1
-  labels <- sprintf("%d-%d", s, e)
-
-  # label type
-  if (label_type == "open") {
-    labels[1L] <- jaid::get_pattern("-[0-9]+", labels[1L])
-    labels[length(labels)] <- jaid::get_pattern("[0-9]+-", labels[length(labels)])
-  } else if (label_type == "open.start") {
-    labels[1L] <- jaid::get_pattern("-[0-9]+", labels[1L])
-  } else if (label_type == "open.end") {
-    labels[length(labels)] <- jaid::get_pattern("[0-9]+-", labels[length(labels)])
-  }
-  levels(col_band) <- labels
-  if (missing(col_nm))
-    col_nm <- sprintf("%s_band", var)
-  data.table::set(df, j = col_nm, value = ordered(col_band))
-  data.table::setcolorder(df, col_nm, after = var)
-  # jaid::set_attr(df, "class", old_class)
+set_age_band <- function(...) {
+  lifecycle::deprecate_warn("0.0.0.9001", "set_age_band()", "add_age_band()")
+  add_age_band(...)
 }

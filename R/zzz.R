@@ -9,7 +9,7 @@
   assign("SKINCANCER"     , "C44", envir = .AUW_ENV)
   assign("PSEUDOCANCER"   , "C44|C73|D0[0-79]|D3[7-9]|D4[0-4]|D47[026-9]|D48", envir = .AUW_ENV)
   assign("BREASTCANCER"   , "C50", envir = .AUW_ENV)
-  assign("SMALLCANCER"    , "C5[034]|C6[17]", envir = .AUW_ENV) # 소액암
+  assign("SMALLCANCER"    , "C5[034]|C6[17]", envir = .AUW_ENV)
   assign("UTERICANCER"    , "C5[3-5]", envir = .AUW_ENV)
   assign("PROSTATECANCER" , "C61", envir = .AUW_ENV)
   assign("BLADDERCANCER"  , "C67", envir = .AUW_ENV)
@@ -17,10 +17,10 @@
   assign("CIS"            , "D0[0-79]", envir = .AUW_ENV) # Carcinoma in situ
   assign("BORDERLINETUMOR", "D3[7-9]|D4[0-4]|D47[026-9]|D48", envir = .AUW_ENV)
   assign("DIABETES"       , "E1[0-4]|G590|G632|H280|H360|M142|N083", envir = .AUW_ENV)
-  assign("VALVE"          , "I0[89]|I3[4-9]|T82|Z95", envir = .AUW_ENV) # 심장판막
+  assign("VALVE"          , "I0[89]|I3[4-9]|T82|Z95", envir = .AUW_ENV)
   assign("HYPERTENSION"   , "I1[0-5]", envir = .AUW_ENV)
-  assign("ANGINA"         , "I20", envir = .AUW_ENV) # 협심증
-  assign("STROKE"         , "I6[0-356]", envir = .AUW_ENV) # 뇌졸중
-  assign("CIRRHOSIS"      , "K70[23]|K717|K74|K761", envir = .AUW_ENV) # 간경화
+  assign("ANGINA"         , "I20", envir = .AUW_ENV)
+  assign("STROKE"         , "I6[0-356]", envir = .AUW_ENV)
+  assign("CIRRHOSIS"      , "K70[23]|K717|K74|K761", envir = .AUW_ENV)
   assign("ACCIDENT"       , "[STV]|W[0-5]|W6[0-4]|W8[5-9]|W9[0-9]|X[0-24]|X5[15689]|X8[5-9]|X9|Y[0-2457]|Y3[0-46-9]|Y35[0-46-9]|Y8[0-4]", envir = .AUW_ENV)
 }

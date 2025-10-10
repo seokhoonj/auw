@@ -2,31 +2,53 @@
 % Please edit documentation in R/kcd.R
 \name{get_kcd}
 \alias{get_kcd}
-\title{Get KCD codes}
+\title{Get KCD codes (search by code or term)}
 \usage{
 get_kcd(x, lang = c("ko", "en"), type = c("kcd", "ko", "en"))
 }
 \arguments{
-\item{x}{a KCD code string or regular expression.}
+\item{x}{Character scalar. A KCD code string or a regular expression.
+Matching is case-insensitive for codes and English; dots in codes can be
+ignored (e.g., \code{"M51"} matches \code{"M51.0"}).}
 
-\item{lang}{a string specifying language to explain ("ko", "en")}
+\item{lang}{Output language for the printed table header/terms; one of
+\code{"ko"} or \code{"en"}. This does \strong{not} affect the return type; see \code{type}.}
 
-\item{type}{a string sepcifying a type of a return value ("kcd", "ko", "en")}
+\item{type}{Field to return as a character vector; one of \code{"kcd"}, \code{"ko"},
+or \code{"en"}.}
 }
 \value{
-a string vector
+A character vector of the requested \code{type} (invisible). A formatted
+table of matches is printed to the console as a side effect.
 }
 \description{
-Search for KCD codes in Korean or English
+Search the packaged KCD dictionary for matches in \strong{code}, \strong{Korean term},
+or \strong{English term}, and print a compact table of matches. Returns a character
+vector of the requested field.
+}
+\details{
+The search proceeds in this order:
+\enumerate{
+\item code column (\code{kcd}), allowing both dotted and undotted matches
+\item Korean term column (\code{ko})
+\item English term column (\code{en})
+The first non-empty match set is printed and returned.
+}
 }
 \examples{
-# get a kcd code
-\donttest{get_kcd("M51")
+\donttest{
+# Search by exact/regex code
+get_kcd("M51")
 get_kcd("M51$|S33$")
-get_kcd("Diabetes")}
 
-# get a related kcd code vector
-\donttest{kcd <- get_kcd("M51$|S33$", type = "kcd")
-kcd}
+# Search by English term (case-insensitive)
+get_kcd("Diabetes", lang = "en", type = "kcd")
 
+# Get matched Korean terms as a character vector
+ko_terms <- get_kcd("M51$|S33$", type = "ko")
+}
+
+}
+\seealso{
+\code{\link[=add_kcd_sub]{add_kcd_sub()}}, \code{\link[=add_kcd_name]{add_kcd_name()}}
 }

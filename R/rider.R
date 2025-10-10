@@ -51,16 +51,16 @@ classify_rider <- function(df, rider) {
 
   # Vectorized classification function
   classify_vector <- function(text_vector, keyword_list) {
-    # 각 텍스트에 대한 빈 리스트 생성
+    # Create an empty list for each text entry
     result_list <- vector("list", length(text_vector))
 
     for (category_name in names(keyword_list)) {
       matches <- grepl(keyword_list[[category_name]], text_vector)
-      # 매칭되는 위치에 카테고리 추가
+      # Append the category to positions where a match is found
       result_list[matches] <- lapply(result_list[matches], c, category_name)
     }
 
-    # 리스트를 쉼표로 구분된 문자열로 변환
+    # Convert the list to comma-separated strings
     result <- sapply(result_list, paste, collapse = ",")
     result[result == ""] <- NA_character_
     return(result)

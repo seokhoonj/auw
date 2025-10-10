@@ -28,7 +28,7 @@ alr_uym_plot(
 
 \item{scales}{Should \code{scales} be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")?}
 
-\item{theme}{a string specifying a \code{\link[=match_theme]{match_theme()}} function ("view", "save", "shiny")}
+\item{theme}{a string specifying a \code{\link[ggshort:switch_theme]{ggshort::switch_theme()}} function ("view", "save", "shiny")}
 
 \item{...}{\code{\link[=theme_view]{theme_view()}}, \code{\link[=theme_save]{theme_save()}}, \code{\link[=theme_shiny]{theme_shiny()}} arguments}
 }
