@@ -513,9 +513,9 @@ summarise_rr <- function(x, ...) {
 
   decl_levels <- levels(dt$decl)
   if (length(setdiff(decl_vs, decl_levels)) > 0)
-    stop("Invalid declaration levels")
+    stop("Invalid declaration levels", call. = FALSE)
 
-  ds <- dt[decl %in% decl_vs & excl == 0 & claim == 1]
+  ds <- dt[dt$decl %in% decl_vs & dt$excl == 0 & dt$claim == 1]
 
   if (instead::unilen(ds$decl) > 2)
     stop("Please select two types of declarations to calculate relative risk")
@@ -597,7 +597,7 @@ summarise_rr <- function(x, ...) {
     or        = or_res$or,
     or_lower  = or_res$lower,
     or_upper  = or_res$upper,
-    p_value    = or_res$p_value,
+    p_value   = or_res$p_value,
     decision  = factor(ifelse(or_res$p_value < (1 - conf.level), "reject", "fail"),
                        levels = c("reject", "fail"))
   )]

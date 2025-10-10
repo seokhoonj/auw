@@ -59,17 +59,14 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
       readline("Please insert risk (if you want all risks, 'all'): "),
       split = "\\|")[[1L]])
   }
-  if (x != "all") dt <- dt[risk_nm %chin% x]
+  if (x != "all") dt <- dt[dt$risk_nm %chin% x]
 
-  dt_s <- dt[!is.na(rate), .(max_rate = max(.SD)),
-                           .(risk_nm, gender),
-                           .SDcols = "rate"]
-  dt[dt_s, `:=`(max_rate, max_rate),
-            on = .(risk_nm, gender, rate = max_rate)]
-  dt_a <- dt[!is.na(max_rate), .(age = min(age)),
-                           .(risk_nm, gender, max_rate)]
+  dt_s <- dt[!is.na(rate), .(max_rate = max(.SD)), .(risk_nm, gender),
+             .SDcols = "rate"]
+  dt[dt_s, `:=`(max_rate, max_rate), on = .(risk_nm, gender, rate = max_rate)]
+  dt_a <- dt[!is.na(max_rate), .(age = min(age)), .(risk_nm, gender, max_rate)]
   data.table::setcolorder(dt_a, "age", after = "gender")
-  rm_cols(dt, max_rate)
+  instead::rm_cols(dt, max_rate)
   dt[dt_a, on = .(risk_nm, gender, age), `:=`(max_rate, max_rate)]
   dt[, `:=`(label, ifelse(!is.na(max_rate), sprintf("%.4f (%d)", max_rate, age), max_rate))]
   dt_a[, `:=`(label, sprintf("%d: %.4f (%d)", gender, max_rate, age)), .(risk_nm)]
@@ -86,10 +83,10 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
     color = .data[["gender"]]
   ) +
     list(if (max_label) {
-      geom_label(data = dt_b, aes(label = .data[["label"]]),
-                 family = getOption("ggshort.font"),
-                 colour = "black", alpha = .3,
-                 hjust = -.1, vjust = 1.2)
+      ggplot2::geom_label(data = dt_b, aes(label = .data[["label"]]),
+                          family = getOption("ggshort.font"),
+                          colour = "black", alpha = .3,
+                          hjust = -.1, vjust = 1.2)
     }) +
     ggshort::scale_color_gender() +
     ggplot2::scale_x_continuous(

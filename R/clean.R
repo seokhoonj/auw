@@ -45,7 +45,7 @@ add_age_band <- function(df, age_var, interval = 5, right = FALSE,
 }
 
 melt_kcd <- function(df, kcd_cols) {
-  assert_class(df, "data.frame")
+  instead::assert_class(df, "data.frame")
 
   env <- ensure_dt_env(df)
   dt  <- env$dt
