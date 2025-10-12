@@ -202,13 +202,13 @@ comp_risk_plot <- function(risk_info, x, y,
     dz, id.vars = id.vars, measure.vars = c("rate_x", "rate_y", "ratio"),
     variable.name = c("risk"), value.name = c("rate")
   )
-  data.table::set(dm, i = which(dm$risk == "rate_x"), j = "risk", value = risk1)
-  data.table::set(dm, i = which(dm$risk == "rate_y"), j = "risk", value = risk2)
+  data.table::set(dm, i = which(dm$risk == "rate_x"), j = "risk", value = x)
+  data.table::set(dm, i = which(dm$risk == "rate_y"), j = "risk", value = y)
   data.table::set(dm, j = "label", value = paste(dm$risk, "(", dm$gender, ")"))
 
   # for p1
   scale_y_fun <- if (logscale) ggplot2::scale_y_log10 else ggplot2::scale_y_continuous
-  title       <- bquote("Risk Rate Ratio = " * frac(.(risk1), .(risk2)))
+  title       <- bquote("Risk Rate Ratio = " * frac(.(x), .(y)))
 
   # rate
   data_rate <- dm[risk != "ratio"]
