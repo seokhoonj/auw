@@ -9,7 +9,10 @@
 #' @description
 #' Given a cohort data frame with ID, KCD, and service date range columns,
 #' this function:
-#' 1. Computes a date window `[uw_date + start months, uw_date + end months]`.
+#' 1. Computes a date window `[uw_date + start months, uw_date + end months]`
+#'    for each record. These boundary dates are stored internally as:
+#'    - `fdate`: the window **start date** (underwriting date + start months)
+#'    - `tdate`: the window **end date** (underwriting date + end months).
 #' 2. Finds IDs whose any row has `to_var >= fdate` and `from_var < tdate`
 #'    **and** whose `kcd_var` matches one or more KCD patterns.
 #' 3. Returns the **entire** cohort subset for those IDs.
@@ -55,7 +58,8 @@
 #' # Include M79 or S33, then exclude any ^C codes by regex
 #' subset_cohort_by_id_with_kcd(
 #'   cohort, id, kcd, sdate, edate,
-#'   uw_date = as.Date("2018-07-01"), start = -24, end = 12,
+#'   uw_date = as.Date("2018-07-01"),
+#'   start = -24, end = 12,
 #'   "M79|S33", "!^C"
 #' )
 #' }
@@ -329,7 +333,7 @@ summarise_id_with_kcd_ir <- function(cohort, id_var, group_var, kcd_var,
   )
   smr <- summary(ds)
   decl_cols <- names(smr)[grepl("^decl", names(smr), perl = TRUE)]
-  smr$decl <- instead::paste_list(smr[, .SD, .SDcols = decl_cols], sep = "+")
+  smr$decl <- instead::paste_cols(smr, decl_cols, sep = "+")
   smr$decl <- as.factor(smr$decl)
   instead::rm_cols(smr, decl_cols)
   data.table::setcolorder(smr, "decl", before = "excl")
@@ -390,53 +394,44 @@ ir_plot <- function(x, group_var, palette = c("base", "deep"),
   instead::assert_class(x, "ir")
 
   palette <- match.arg(palette)
-  scales <- match.arg(scales)
+  scales  <- match.arg(scales)
 
   decl  <- attr(x, "decl")
   excl  <- attr(x, "excl")
   claim <- attr(x, "claim")
-  subtitle <- sprintf("Decl: %s / Excl: %s / Claim: %s", decl, excl, claim)
+
   title <- "Incidence Rate"
+  subtitle <- sprintf("Decl: %s / Excl: %s / Claim: %s", decl, excl, claim)
 
   data <- x[x$excl == 0 & x$claim == 1,]
 
-  is_pair <- length(levels(data$decl)) <= 2
-  age_band <- gender <- ratio <- NULL
   if (instead::has_cols(data, c("gender", "age_band")))
     return(
-      ggbar(data, x = .data$age_band, y = .data$ratio, fill = .data$decl) +
-        list(if (is_pair)
-          scale_fill_pair_manual(palette = palette)
-        ) +
-        facet_wrap(~ gender) +
-        labs(title = title, subtitle = subtitle) +
+      ggshort::ggbar(data, x = .data$age_band, y = .data$ratio, fill = .data$decl) +
+        ggshort::scale_fill_pair_manual(palette = palette) +
+        ggplot2::facet_wrap(~ gender) +
+        ggplot2::labs(title = title, subtitle = subtitle) +
         ggshort::switch_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (instead::has_cols(data, "gender") & !instead::has_cols(data, "age_band"))
     return(
-      ggbar(data, x = .data$gender, y = .data$ratio, fill = .data$decl) +
-        list(if (is_pair)
-          scale_fill_pair_manual(palette = palette)
-        ) +
-        labs(title = title, subtitle = subtitle) +
+      ggshort::ggbar(data, x = .data$gender, y = .data$ratio, fill = .data$decl) +
+        ggshort::scale_fill_pair_manual(palette = palette) +
+        ggplot2::labs(title = title, subtitle = subtitle) +
         ggshort::switch_theme(theme = theme, y.size = 0)
     )
   if (!instead::has_cols(data, "gender") & instead::has_cols(data, "age_band"))
     return(
-      ggbar(data, x = .data$age_band, y = .data$ratio, fill = .data$decl) +
-        list(if (is_pair)
-          scale_fill_pair_manual(palette = palette)
-        ) +
-        labs(title = title, subtitle = subtitle) +
+      ggshort::ggbar(data, x = .data$age_band, y = .data$ratio, fill = .data$decl) +
+        ggshort::scale_fill_pair_manual(palette = palette) +
+        ggplot2::labs(title = title, subtitle = subtitle) +
         ggshort::switch_theme(theme = theme, x.angle = 90, y.size = 0)
     )
   if (!instead::has_cols(data, "gender") & !instead::has_cols(data, "age_band"))
     return(
-      ggbar(data, x = .data$decl, y = .data$ratio, fill = .data$decl) +
-        list(if (is_pair)
-          scale_fill_pair_manual(palette = palette)
-        ) +
-        labs(title = title, subtitle = subtitle) +
+      ggshort::ggbar(data, x = .data$decl, y = .data$ratio, fill = .data$decl) +
+        ggshort::scale_fill_pair_manual(palette = palette) +
+        ggplot2::labs(title = title, subtitle = subtitle) +
         ggshort::switch_theme(theme = theme, y.size = 0)
     )
 }
@@ -447,8 +442,8 @@ plot.ir <- function(x, color_type = c("base", "deep"),
                     scales = c("fixed", "free_y", "free_x", "free"),
                     theme = c("view", "save", "shiny"), ...) {
   color_type <- match.arg(color_type)
-  scales <- match.arg(scales)
-  theme <- match.arg(theme)
+  scales     <- match.arg(scales)
+  theme      <- match.arg(theme)
   ir_plot(x = x, color_type = color_type, scales = scales, theme = theme)
 }
 
@@ -515,40 +510,44 @@ summarise_rr <- function(x, ...) {
   if (length(setdiff(decl_vs, decl_levels)) > 0)
     stop("Invalid declaration levels", call. = FALSE)
 
-  ds <- dt[dt$decl %in% decl_vs & dt$excl == 0 & dt$claim == 1]
+  ds <- dt[dt$decl %chin% decl_vs & dt$excl == 0 & dt$claim == 1,]
 
   if (instead::unilen(ds$decl) > 2)
     stop("Please select two types of declarations to calculate relative risk")
 
-  group <- setdiff(names(ds), c("decl", "excl", "claim", "n", "nsum", "ratio"))
-  if (length(group) == 0) group <- "."
-  fml <- formula(sprintf("%s ~ decl", paste(group, collapse = " + ")))
+  groups <- instead::anti_cols(
+    ds, c("decl", "excl", "claim", "n", "nsum", "ratio")
+  )
+  if (length(groups) == 0) groups <- "."
 
-  dn <- data.table::dcast(ds, fml, value.var = "n", fun.aggregate = sum)
+  fml <- stats::formula(sprintf("%s ~ decl", paste(groups, collapse = " + ")))
+
+  dn  <- data.table::dcast(ds, fml, value.var = "n", fun.aggregate = sum)
   instead::replace_na_with_zero(dn)
-  data.table::setnames(dn, c(group, c("n01", "n11")))
+  data.table::setnames(dn, c(groups, c("n01", "n11")))
 
   dm <- data.table::dcast(ds, fml, value.var = "nsum", fun.aggregate = sum)
   instead::replace_na_with_zero(dm)
-  data.table::setnames(dm, c(group, c("nsum0", "nsum1")))
+  data.table::setnames(dm, c(groups, c("nsum0", "nsum1")))
 
-  n00 <- n01 <- n10 <- n11 <- nsum0 <- nsum1 <- NULL
-  dm[dn, on = group, `:=`(n01 = n01, n11 = n11)]
-  dm[, `:=`(n00, nsum0 - n01)]
-  dm[, `:=`(n10, nsum1 - n11)]
-  instead::rm_cols(dm, list(nsum0, nsum1))
-  data.table::setnames(dm,
+  n01 <- n11 <- NULL
+  dm[dn, on = groups, `:=`(n01 = n01, n11 = n11)]
+  data.table::set(dm, j = "n00", value = dm$nsum0 - dm$n01)
+  data.table::set(dm, j = "n10", value = dm$nsum1 - dm$n11)
+  instead::rm_cols(dm, c("nsum0", "nsum1"))
+  data.table::setnames(
+    dm,
     c("n11", "n01", "n10", "n00"),
-    c("tp" , "fn" , "fp" , "tn")
+    c("tp" , "fn" , "fp" , "tn" )
   )
-  data.table::setcolorder(dm, c(group, "tp", "fn", "fp", "tn"))
+  data.table::setcolorder(dm, c(groups, "tp", "fn", "fp", "tn"))
 
   # contingency matrix
   arr <- array(t(as.matrix(
     dm[, c("tp", "fn", "fp", "tn")]
   )), dim = c(2L, 2L, nrow(dm)))
   each_names <- do.call(
-    paste, c(dm[, .SD, drop = FALSE, .SDcols = group], sep = " / ")
+    paste, c(dm[, .SD, drop = FALSE, .SDcols = groups], sep = " / ")
   )
   dimnames(arr) <- list(
     c("exposed+", "exposed-"),
@@ -568,15 +567,9 @@ summarise_rr <- function(x, ...) {
   })
   names(cmatrix) <- dimnames(arr)[[3]]
 
-
-  # p_value <- sapply(1:nrow(dm), function(x) fisher.test(cmatrix[,, x])$p.value)
-
   # incidence
-  # inc0 <- inc1 <- fp <- fn <- or <- rr <- tp <- tn <- NULL
   data.table::set(dm, j = "inc0", value = dm$fn / (dm$fn + dm$tn))
   data.table::set(dm, j = "inc1", value = dm$tp / (dm$tp + dm$fp))
-  # dm[, `:=`(inc0, fn / (fn + tn))]
-  # dm[, `:=`(inc1, tp / (tp + fp))]
 
   # relative risk
   rr_res <- .rr_ci_wald(
@@ -606,8 +599,9 @@ summarise_rr <- function(x, ...) {
   data.table::setattr(dm, "excl" , attr(x, "excl"))
   data.table::setattr(dm, "claim", attr(x, "claim"))
   data.table::setattr(dm, "cmatrix", cmatrix)
-  dm <- env$restore(dm)
+
   dm <- instead::prepend_class(dm, "rr")
+  dm <- env$restore(dm)
 
   dm
 }
@@ -728,23 +722,22 @@ rr_plot <- function(x,
   decl     <- attr(x, "decl")
   excl     <- attr(x, "excl")
   claim    <- attr(x, "claim")
-  subtitle <- sprintf("Decl: %s - Excl: %s - Claim: %s", decl, excl, claim)
   title    <- if (logscale) "Relative Risk (log scale)" else "Relative Risk"
+  subtitle <- sprintf("Decl: %s - Excl: %s - Claim: %s", decl, excl, claim)
 
   # Text label (N.S. if decision == "fail") — keep existing semantics
-  if (!has_cols(x, "label")) {
+  if (!has_cols(x, "label"))
     x$label <- sprintf(
       "%s\n%.2f\n(%s)",
       ifelse(x$decision == "fail", "N.S.", ""),
       x$rr, x$tp
     )
-  }
 
   # Dynamic x-aes & facet rule
-  has_gender   <- has_cols(x, "gender")
-  has_age_band <- has_cols(x, "age_band")
+  has_gender   <- instead::has_cols(x, "gender")
+  has_age_band <- instead::has_cols(x, "age_band")
 
-  x_var   <- if (has_age_band) "age_band" else if (has_gender) "gender" else "decl1"
+  x_var   <- if (has_age_band) "age_band" else if (has_gender) "gender" else "."
   x_angle <- if (identical(x_var, "age_band")) 90 else 0
 
   # ymax for label headroom (optional but handy)
@@ -770,10 +763,11 @@ rr_plot <- function(x,
     # list(if (is_pair) ggshort::scale_fill_gender(palette = palette)) +
     # facet rule: only when both gender & age_band exist
     list(if (has_gender && has_age_band)
-      ggplot2::facet_wrap(~ gender, scales = scales)) +
+      ggplot2::facet_wrap(~ gender, scales = scales)
+    ) +
     ggplot2::labs(title = title, subtitle = subtitle,
                   caption = "N.S.: Not Significant") +
-    ggshort::switch_theme(theme = theme, x.angle = x_angle, y.size = 0, ...)
+    ggshort::switch_theme(theme = theme, x.angle = x_angle, y.size = 0)
 
   p
 }
@@ -1182,4 +1176,32 @@ irplot <- function(...) {
   }
 
   out
+}
+
+.build_cmatrix <- function(df, group_var) {
+  instead::assert_cols(df, c("tp", "fn", "fp", "tn"))
+
+  arr <- array(t(as.matrix(
+    df[, c("tp", "fn", "fp", "tn")]
+  )), dim = c(2L, 2L, nrow(df)))
+
+  each_names <- instead::paste_cols(df, group_var, sep = " / ")
+
+  dimnames(arr) <- list(
+    c("exposed+", "exposed-"),
+    c("outcome+", "outcome-"),
+    each_names
+  )
+  arr <- stats::addmargins(arr, c(1L, 2L))
+  dimnames(arr) <- lapply(dimnames(arr), tolower)
+  cmatrix <- lapply(seq_len(dim(arr)[3]), function(i) {
+    m <- arr[,, i, drop = FALSE]
+    dim(m) <- dim(arr)[1:2]
+    dimnames(m) <- dimnames(arr)[1:2]
+    m
+  })
+  cmatrix <- lapply(seq_along(cmatrix), function(i) {
+    cbind(cmatrix[[i]], .binom_test(cmatrix[[i]][,1], cmatrix[[i]][,3])[, 3:5])
+  })
+  names(cmatrix) <- dimnames(arr)[[3]]
 }

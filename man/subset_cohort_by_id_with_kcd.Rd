@@ -46,7 +46,12 @@ applying any exclusions).
 Given a cohort data frame with ID, KCD, and service date range columns,
 this function:
 \enumerate{
-\item Computes a date window \verb{[uw_date + start months, uw_date + end months]}.
+\item Computes a date window \verb{[uw_date + start months, uw_date + end months]}
+for each record. These boundary dates are stored internally as:
+\itemize{
+\item \code{fdate}: the window \strong{start date} (underwriting date + start months)
+\item \code{tdate}: the window \strong{end date} (underwriting date + end months).
+}
 \item Finds IDs whose any row has \code{to_var >= fdate} and \code{from_var < tdate}
 \strong{and} whose \code{kcd_var} matches one or more KCD patterns.
 \item Returns the \strong{entire} cohort subset for those IDs.
@@ -87,7 +92,8 @@ subset_cohort_by_id_with_kcd(
 # Include M79 or S33, then exclude any ^C codes by regex
 subset_cohort_by_id_with_kcd(
   cohort, id, kcd, sdate, edate,
-  uw_date = as.Date("2018-07-01"), start = -24, end = 12,
+  uw_date = as.Date("2018-07-01"),
+  start = -24, end = 12,
   "M79|S33", "!^C"
 )
 }
