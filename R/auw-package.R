@@ -1,6 +1,13 @@
 #' @description
-#' This package is developed for actuarial underwriting.
+#' Provides tools for disease cohort analysis and A/E (Actual-to-Expected)
+#' ratio simulation, integrating both actuarial and underwriting perspectives.
+#' Designed to support morbidity experience studies, evaluate underwriting
+#' bias, and visualize portfolio-level risk outcomes.
+#'
+#' This package is developed primarily for actuarial underwriting workflows.
+#'
 #' @keywords internal
+#'
 #' @importFrom ggplot2 aes coord_flip element_rect geom_hline geom_label
 #'   facet_wrap labs scale_color_gradientn scale_fill_gradient
 #'   scale_x_continuous scale_y_log10 theme xlab ylab
@@ -18,8 +25,6 @@
 #'   unilen zeros
 #' @importFrom openxlsx createWorkbook saveWorkbook
 #' @importFrom rlang .data as_name enquo enquos ensym ensyms has_length list2 syms
-#' @importFrom scales comma
 #' @importFrom stats binom.test fisher.test formula median pnorm qnorm
-#' @importFrom stringr str_pad
 #' @importFrom utils globalVariables head tail
 "_PACKAGE"

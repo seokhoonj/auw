@@ -46,6 +46,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
                       nrow = NULL, ncol = NULL, scales = "fixed",
                       theme = c("view", "save", "shiny"), ...) {
   instead::assert_class(risk_info, "data.frame")
+  instead::assert_cols(risk_info, c("risk_nm", "gender", "age"))
   instead::assert_class(risk_info$gender, "factor")
   theme <- match.arg(theme)
 
@@ -75,7 +76,7 @@ risk_plot <- function(risk_info, x, logscale = FALSE, max_label = TRUE,
   dt_b[, `:=`(age, -Inf)]
   dt_b[, `:=`(rate, Inf)]
 
-  scale_y_fun <- if (logscale) ggplot2::scale_y_log10 else ggplot2::scale_y_continuous
+  scale_y_fun <- if (logscale) ggplot2::scale_y_sqrt else ggplot2::scale_y_continuous
 
   p <- ggshort::ggline(
     data = dt,
@@ -206,17 +207,17 @@ comp_risk_plot <- function(risk_info, x, y,
   data.table::set(dm, i = which(dm$risk == "rate_y"), j = "risk", value = y)
   data.table::set(dm, j = "label", value = paste(dm$risk, "(", dm$gender, ")"))
 
-  # for p1
-  scale_y_fun <- if (logscale) ggplot2::scale_y_log10 else ggplot2::scale_y_continuous
+  # For p1
+  scale_y_fun <- if (logscale) ggshort::scale_y_log else ggplot2::scale_y_continuous
   title       <- bquote("Risk Rate Ratio = " * frac(.(x), .(y)))
 
-  # rate
+  # Rate
   data_rate <- dm[risk != "ratio"]
   p1 <- ggshort::ggline(
     data = data_rate,
-    x = .data[["age"]], y = .data[["rate"]],
-    color = .data[["gender"]], group = .data[["label"]],
-    linetype = .data[["risk"]]
+    x = .data$age, y = .data$rate,
+    color = .data$gender, group = .data$label,
+    linetype = .data$risk
   ) +
     ggplot2::scale_x_continuous(
       n.breaks = floor(instead::unilen(data_rate$age) / age_unit)
@@ -248,14 +249,14 @@ comp_risk_plot <- function(risk_info, x, y,
     ggplot2::facet_wrap("~ risk") +
     ggshort::switch_theme(theme = theme)
 
-  legend <- get_legend(p1)
-  p1 <- p1 + theme(legend.position = "none")
+  legend <- ggshort::get_legend(p1)
+  p1 <- p1 + ggplot2::theme(legend.position = "none")
 
-  p <- hstack_plots(p1, p2, widths = c(6, 4))
-  p <- vstack_plots(p, legend, heights = c(8.5, 1.5))
-  p <- p |> add_title(title = title)
+  p <- ggshort::hstack_plots(p1, p2, widths = c(6, 4))
+  p <- ggshort::vstack_plots(p, legend, heights = c(8.5, 1.5))
+  p <- p |> ggshort::add_title(title = title)
 
-  p <- grob_to_ggplot(p)
+  p <- ggshort::grob_to_ggplot(p)
   data.table::setattr(p, "raw", env$restore(dz))
 
   p

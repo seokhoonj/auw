@@ -6,7 +6,12 @@
 \alias{auw-package}
 \title{auw: Actuarial Underwriting}
 \description{
-This package is developed for actuarial underwriting.
+Provides tools for disease cohort analysis and A/E (Actual-to-Expected)
+ratio simulation, integrating both actuarial and underwriting perspectives.
+Designed to support morbidity experience studies, evaluate underwriting
+bias, and visualize portfolio-level risk outcomes.
+
+This package is developed primarily for actuarial underwriting workflows.
 }
 \author{
 \strong{Maintainer}: Seokhoon Joo \email{seokhoonj@gmail.com}
