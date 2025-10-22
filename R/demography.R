@@ -1,3 +1,4 @@
+#' @export
 get_demography <- function(cohort, id_var = "id", group_var = c("gender", "age_band")) {
   instead::assert_class(cohort, "data.frame")
 
@@ -16,6 +17,7 @@ get_demography <- function(cohort, id_var = "id", group_var = c("gender", "age_b
   instead::prepend_class(demo, "demo")
 }
 
+#' @export
 demo_plot <- function(x, show_label = TRUE,
                       label_args = list(
                         family = getOption("ggshort.font"),
