@@ -234,7 +234,7 @@ plot.aer <- function(x, group_var, period_var = "uym",
   instead::assert_length(idx_var)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  aer_plot(x = x, group_var = !!grp_var, period_var = !!prd_var,
+  plot_aer(x = x, group_var = !!grp_var, period_var = !!prd_var,
                index_var = !!idx_var, elapsed_var = !!elp_var,
                scales = scales, theme = theme)
 }
@@ -253,7 +253,7 @@ plot.aer <- function(x, group_var, period_var = "uym",
 #' @return a ggplot object
 #'
 #' @export
-aer_mean_plot <- function(x, group_var, elapsed_var = "elpm",
+plot_aer_mean <- function(x, group_var, elapsed_var = "elpm",
                           color_type = c("base", "deep"),
                           scales = c("fixed", "free_y", "free_x", "free"),
                           theme = c("view", "save", "shiny"), ...) {
@@ -297,7 +297,7 @@ plot.aer_mean <- function(x, group_var, elapsed_var = "elpm",
   instead::assert_length(elp_var)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  aer_mean_plot(x = x, group_var = !!grp_var, elapsed_var = !!elp_var,
+  plot_aer_mean(x = x, group_var = !!grp_var, elapsed_var = !!elp_var,
                 scales = scales, theme = theme)
 }
 
@@ -316,7 +316,7 @@ plot.aer_mean <- function(x, group_var, elapsed_var = "elpm",
 #' @return a ggplot object
 #'
 #' @export
-aer_median_plot <- function(x, group_var, elapsed_var = "elpm",
+plot_aer_median <- function(x, group_var, elapsed_var = "elpm",
                             color_type = c("base", "deep"),
                             scales = c("fixed", "free_y", "free_x", "free"),
                             theme = c("view", "save", "shiny"), ...) {
@@ -361,7 +361,7 @@ plot.aer_median <- function(x, group_var, elapsed_var = "elpm",
   color_type <- match.arg(color_type)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  aer_median_plot(x = x, group_var = !!grp_var, elapsed_var = !!elp_var,
+  plot_aer_median(x = x, group_var = !!grp_var, elapsed_var = !!elp_var,
                   color_type = color_type, scales = scales, theme = theme)
 }
 
@@ -377,7 +377,7 @@ plot.aer_median <- function(x, group_var, elapsed_var = "elpm",
 #' @return a gtable object
 #'
 #' @export
-aer_comp_plot <- function(df, elapsed_num, period_var = "uym", elapsed_var = "elpm",
+plot_aer_comp <- function(df, elapsed_num, period_var = "uym", elapsed_var = "elpm",
                           theme = c("view", "save", "shiny")) {
   instead::assert_class(df, "data.frame")
   prd_var <- instead::capture_names(df, !!rlang::enquo(period_var))
