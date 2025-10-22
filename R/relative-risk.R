@@ -790,6 +790,7 @@ plot.rr <- function(x,
   )
 }
 
+#' @export
 save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite = FALSE) {
   instead::assert_class(ir, "ir")
   instead::assert_class(rr, "rr")
