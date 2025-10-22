@@ -384,11 +384,11 @@ summary.ir.data <- function(object, ...) {
 #' @examples
 #' # draw an incidence rate plot
 #' \dontrun{
-#' ir_plot(x)
+#' plot_ir(x)
 #' }
 #'
 #' @export
-ir_plot <- function(x, group_var, palette = c("base", "deep"),
+plot_ir <- function(x, group_var, palette = c("base", "deep"),
                     scales = c("fixed", "free_y", "free_x", "free"),
                     theme = c("view", "save", "shiny"), ...) {
   instead::assert_class(x, "ir")
@@ -434,17 +434,6 @@ ir_plot <- function(x, group_var, palette = c("base", "deep"),
         ggplot2::labs(title = title, subtitle = subtitle) +
         ggshort::switch_theme(theme = theme, y.size = 0)
     )
-}
-
-#' @method plot ir
-#' @export
-plot.ir <- function(x, color_type = c("base", "deep"),
-                    scales = c("fixed", "free_y", "free_x", "free"),
-                    theme = c("view", "save", "shiny"), ...) {
-  color_type <- match.arg(color_type)
-  scales     <- match.arg(scales)
-  theme      <- match.arg(theme)
-  ir_plot(x = x, color_type = color_type, scales = scales, theme = theme)
 }
 
 #' Summarise relative risk from IR objects
@@ -635,7 +624,7 @@ summarise_rr.ir.data <- function(x, decl_vs = c("0","1"), conf.level = .95, ...)
 #'
 #' @return A ggplot object.
 #' @export
-ir_plot <- function(x,
+plot_ir <- function(x,
                     palette = c("base", "deep"),
                     scales = c("fixed", "free_y", "free_x", "free"),
                     theme = c("view", "save", "shiny"), ...) {
@@ -683,10 +672,21 @@ ir_plot <- function(x,
   p
 }
 
+#' @method plot ir
+#' @export
+plot.ir <- function(x, color_type = c("base", "deep"),
+                    scales = c("fixed", "free_y", "free_x", "free"),
+                    theme = c("view", "save", "shiny"), ...) {
+  color_type <- match.arg(color_type)
+  scales     <- match.arg(scales)
+  theme      <- match.arg(theme)
+  plot_ir(x = x, color_type = color_type, scales = scales, theme = theme)
+}
+
 #' Relative Risk Plot
 #'
 #' Visualize relative risks from an `rr` object in a compact, consistent style
-#' (mirrors the structure of `ir_plot`).
+#' (mirrors the structure of `plot_ir`).
 #'
 #' @param x An object of class `"rr"`.
 #' @param logscale Logical; if `TRUE`, use a log scale on the y-axis.
@@ -702,11 +702,11 @@ ir_plot <- function(x,
 #'
 #' @examples
 #' \dontrun{
-#' p <- rr_plot(rr)  # base plot
-#' p <- rr_plot(rr, logscale = TRUE, palette = "deep")
+#' p <- plot_rr(rr)  # base plot
+#' p <- plot_rr(rr, logscale = TRUE, palette = "deep")
 #' }
 #' @export
-rr_plot <- function(x,
+plot_rr <- function(x,
                     logscale = FALSE,
                     palette  = c("base", "deep"),
                     scales   = c("fixed", "free_y", "free_x", "free"),
@@ -780,7 +780,7 @@ plot.rr <- function(x,
                     scales   = c("fixed", "free_y", "free_x", "free"),
                     theme    = c("view", "save", "shiny"),
                     ...) {
-  rr_plot(
+  plot_rr(
     x        = x,
     logscale = logscale,
     scales   = match.arg(scales),
@@ -799,8 +799,14 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
   cmatrix <- attr(rr, "cmatrix")
   cmatrix <- lapply(cmatrix, function(m) m[, 1L:3L])
 
+  # Workbook
+  wb <- if (file.exists(file)) {
+    openxlsx::loadWorkbook(file)
+  } else {
+    openxlsx::createWorkbook()
+  }
+
   # 2x2 matrix
-  wb <- openxlsx::createWorkbook()
   wb <- instead::save_data_wb(
     data = cmatrix,
     wb = wb,
@@ -877,8 +883,8 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
   )
 
   # plots
-  p_ir <- ir_plot(ir, palette = "base")
-  p_rr <- rr_plot(rr, palette = "base")
+  p_ir <- plot_ir(ir, palette = "base")
+  p_rr <- plot_rr(rr, palette = "base")
   p_list <- list("Incidence Rate" = p_ir, "Relative Risk" = p_rr)
 
   ggshort::suppress_geom_removed_warnings({
@@ -895,48 +901,6 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
 
   file
 }
-
-
-# Deprecated functions ----------------------------------------------------
-
-#' Deprecated: rrplot()
-#'
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' Use [rr_plot()] instead.
-#'
-#' @param ... Additional arguments passed to [rr_plot()].
-#'
-#' @return Same return value as [rr_plot()].
-#'
-#' @seealso [rr_plot()]
-#'
-#' @export
-rrplot <- function(...) {
-  lifecycle::deprecate_warn("0.0.0.9001", "rrplot()", "rr_plot()")
-  rr_plot(...)
-}
-
-#' Deprecated: irplot()
-#'
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' Use [ir_plot()] instead.
-#'
-#' @param ... Additional arguments passed to [ir_plot()].
-#'
-#' @return Same return value as [ir_plot()].
-#'
-#' @seealso [ir_plot()]
-#'
-#' @export
-irplot <- function(...) {
-  lifecycle::deprecate_warn("0.0.0.9001", "irplot()", "ir_plot()")
-  ir_plot(...)
-}
-
 
 # Internal helper functions -----------------------------------------------
 
