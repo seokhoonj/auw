@@ -204,6 +204,8 @@ plot_aer <- function(x, group_var, period_var = "uym",
   elp_var <- instead::capture_names(x, !!rlang::enquo(elapsed_var))
   val_var <- instead::capture_names(x, !!rlang::enquo(value_var))
 
+  if (!length(grp_var)) grp_var <- attr(x, "group_var")
+
   instead::assert_length(prd_var)
   instead::assert_length(elp_var)
 
@@ -214,16 +216,16 @@ plot_aer <- function(x, group_var, period_var = "uym",
                   color = .data[[prd_var]], group = .data[[prd_var]]) +
     ggshort::scale_color_by_month_gradientn() +
     ggshort::geom_hline1() +
-    facet_wrap(grp_var, scales = scales) +
+    ggplot2::facet_wrap(grp_var, scales = scales) +
     ggshort::switch_theme(theme = theme, ...)
 }
 
 #' @method plot aer
 #' @export
 plot.aer <- function(x, group_var, period_var = "uym",
-                          elapsed_var = "elpm", index_var = "caer",
-                          scales = c("fixed", "free_y", "free_x", "free"),
-                          theme = c("view", "save", "shiny"), ...) {
+                     elapsed_var = "elpm", index_var = "caer",
+                     scales = c("fixed", "free_y", "free_x", "free"),
+                     theme = c("view", "save", "shiny"), ...) {
   instead::assert_class(x, "aer")
   grp_var <- instead::capture_names(x, !!rlang::enquo(group_var))
   prd_var <- instead::capture_names(x, !!rlang::enquo(period_var))
@@ -234,9 +236,10 @@ plot.aer <- function(x, group_var, period_var = "uym",
   instead::assert_length(idx_var)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  plot_aer(x = x, group_var = !!grp_var, period_var = !!prd_var,
-               index_var = !!idx_var, elapsed_var = !!elp_var,
-               scales = scales, theme = theme)
+  plot_aer(x = x,
+           group_var = .data[[grp_var]], period_var = .data[[prd_var]],
+           index_var = .data[[idx_var]], elapsed_var = .data[[elp_var]],
+           scales = scales, theme = theme)
 }
 
 #' Mean of actual cumulative loss ratio
