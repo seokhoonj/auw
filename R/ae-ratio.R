@@ -20,7 +20,7 @@
 #' @param elapsed_var Column(s) defining elapsed periods (e.g., months since issue).
 #'
 #' @return A data.frame (or tibble/data.table depending on input) with class
-#'   `"aer.data"`, containing the following derived columns:
+#'   `"aer"`, containing the following derived columns:
 #'   \describe{
 #'     \item{n_sample}{Number of distinct periods observed}
 #'     \item{closs, crp}{Cumulative loss and cumulative risk premium}
@@ -31,7 +31,7 @@
 #'   }
 #'
 #' The returned object also has an attribute `"longer"` containing
-#' a melted long-format version (`class = "aer.data.longer"`).
+#' a melted long-format version (`class = "aer_longer"`).
 #'
 #' @examples
 #' \dontrun{
@@ -54,11 +54,11 @@
 #' }
 #'
 #' @export
-summarise_aer_stats <- function(df,
-                                group_var,
-                                value_var = c("loss", "rp"),
-                                period_var = c("uym"),
-                                elapsed_var = c("elpm")) {
+summarise_aer <- function(df,
+                          group_var,
+                          value_var = c("loss", "rp"),
+                          period_var = c("uym"),
+                          elapsed_var = c("elpm")) {
   instead::assert_class(df, "data.frame")
 
   env <- instead::ensure_dt_env(df)
@@ -73,8 +73,8 @@ summarise_aer_stats <- function(df,
   instead::assert_length(prd_var)
   instead::assert_length(elp_var)
 
-  grp_prd_var <- c(grp_var, prd_var)
-  grp_elp_var <- c(grp_var, elp_var)
+  grp_prd_var     <- c(grp_var, prd_var)
+  grp_elp_var     <- c(grp_var, elp_var)
   grp_prd_elp_var <- c(grp_var, prd_var, elp_var)
 
   # closs <- caer <- cmargin <- cprofit <- crp <- loss <- aer <- n_sample <-
@@ -109,91 +109,80 @@ summarise_aer_stats <- function(df,
   data.table::set(ds, j = "aer"     , value = ds$loss / ds$rp)
   data.table::set(ds, j = "caer"    , value = ds$closs / ds$crp)
 
-  dc <- data.table::melt(
+  dm <- data.table::melt(
     ds, id.vars = grp_prd_elp_var, measure.vars = c("closs", "crp")
   )
+  dm <- instead::prepend_class(dm, "aer_longer")
 
-  org_class <- class(df)
   data.table::setattr(ds, "group_var"  , grp_var)
   data.table::setattr(ds, "value_var"  , val_var)
   data.table::setattr(ds, "period_var" , prd_var)
   data.table::setattr(ds, "elapsed_var", elp_var)
-  data.table::setattr(dc, "class", c("aer.data.longer", org_class))
-  data.table::setattr(ds, "class", c("aer.data", org_class))
-  data.table::setattr(ds, "longer", dc)
+  data.table::setattr(ds, "longer", dm)
 
-  env$restore(ds[])
+  z <- env$restore(ds)
+
+  instead::prepend_class(z, "aer")
 }
 
-#' Longer data structure
-#'
-#' Make a data structure longer
-#'
-#' @param data a data.frame
-#' @param ... further arguments passed to or from other methods.
-#'
+#' @method longer aer
 #' @export
-longer <- function(data, ...) {
-  UseMethod("longer")
+longer.aer <- function(x, ...) {
+  instead::assert_class(x, "aer")
+  attr(x, "longer")
 }
 
-#' @method longer aer.data
+#' @method mean aer
 #' @export
-longer.aer.data <- function(data, ...) {
-  instead::assert_class(data, "aer.data")
-  attr(data, "longer")
-}
-
-#' @method mean aer.data
-#' @export
-mean.aer.data <- function(x, ...) {
-  instead::assert_class(x, "aer.data")
+mean.aer <- function(x, ...) {
+  instead::assert_class(x, "aer")
   grp_elp_var <- c(attr(x, "group_var"), attr(x, "elapsed_var"))
+
   caer <- aer <- NULL
-  old_class <- class(x)
+
   z <- x[, .(
     n_sample   = .N,
-    aer_mean    = mean(aer),
-    aer_se      = mean(aer) / sqrt(.N),
+    aer_mean    = mean(aer ),
+    aer_se      = mean(aer ) / sqrt(.N),
     caer_mean   = mean(caer),
     caer_se     = mean(caer) / sqrt(.N),
-    aer_se_lwr  = mean(aer)  - mean(aer)  / sqrt(.N),
-    aer_se_upp  = mean(aer)  + mean(aer)  / sqrt(.N),
+    aer_se_lwr  = mean(aer ) - mean(aer ) / sqrt(.N),
+    aer_se_upp  = mean(aer ) + mean(aer ) / sqrt(.N),
     caer_se_lwr = mean(caer) - mean(caer) / sqrt(.N),
     caer_se_upp = mean(caer) + mean(caer) / sqrt(.N)
   ), keyby = grp_elp_var]
-  z <- instead::prepend_class(z, "aer.data.mean")
-  z
+
+  instead::prepend_class(z, "aer_mean")
 }
 
-#' @method median aer.data
+#' @method median aer
 #' @export
-median.aer.data <- function(x, ...) {
-  instead::assert_class(x, "aer.data")
+median.aer <- function(x, ...) {
+  instead::assert_class(x, "aer")
   grp_elp_var <- c(attr(x, "group_var"), attr(x, "elapsed_var"))
+
   caer <- aer <- NULL
-  old_class <- class(x)
+
   z <- x[, .(
     n_sample   = .N,
-    aer_median  = median(aer),
-    aer_se      = median(aer) / sqrt(.N),
+    aer_median  = median(aer ),
+    aer_se      = median(aer ) / sqrt(.N),
     caer_median = median(caer),
     caer_se     = median(caer) / sqrt(.N),
-    aer_se_lwr  = median(aer)  - median(aer)  / sqrt(.N),
-    aer_se_upp  = median(aer)  + median(aer)  / sqrt(.N),
+    aer_se_lwr  = median(aer ) - median(aer ) / sqrt(.N),
+    aer_se_upp  = median(aer ) + median(aer ) / sqrt(.N),
     caer_se_lwr = median(caer) - median(caer) / sqrt(.N),
     caer_se_upp = median(caer) + median(caer) / sqrt(.N)
   ), keyby = grp_elp_var]
-  data.table::setattr(z, "class", c("aer.data.median", old_class))
-  z <- instead::prepend_class(z, "aer.data.median")
-  z
+
+  instead::prepend_class(z, "aer_median")
 }
 
-#' Actual loss ratio by each UY months
+#' Actual A/E ratio by each UY months
 #'
 #' Draw an actual loss ratio by each UY months.
 #'
-#' @param x an aer.data object
+#' @param x an aer object
 #' @param group_var a name of the group variable
 #' @param period_var a name of the period variable ("uym", "uy")
 #' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
@@ -204,49 +193,38 @@ median.aer.data <- function(x, ...) {
 #' @return a ggplot object
 #'
 #' @export
-aer_uym_plot <- function(x, group_var, period_var = "uym",
-                         elapsed_var = "elpm", value_var = "caer",
-                         scales = c("fixed", "free_y", "free_x", "free"),
-                         theme = c("view", "save", "shiny"), ...) {
-  instead::assert_class(x, "aer.data")
+plot_aer <- function(x, group_var, period_var = "uym",
+                     elapsed_var = "elpm", value_var = "caer",
+                     scales = c("fixed", "free_y", "free_x", "free"),
+                     theme = c("view", "save", "shiny"), ...) {
+  instead::assert_class(x, "aer")
+
   grp_var <- instead::capture_names(x, !!rlang::enquo(group_var))
   prd_var <- instead::capture_names(x, !!rlang::enquo(period_var))
   elp_var <- instead::capture_names(x, !!rlang::enquo(elapsed_var))
   val_var <- instead::capture_names(x, !!rlang::enquo(value_var))
+
   instead::assert_length(prd_var)
   instead::assert_length(elp_var)
+
   scales  <- match.arg(scales)
   theme   <- match.arg(theme)
 
-  to <- instead::unilen(x[[elp_var]])
-  start <- min(x[[prd_var]])
-  if (instead::has_cols(x, c("uym", "elpm"))) {
-    len <- seq(from = 0, to = to, by = 12)
-    breaks <- instead::add_mon(start, len)
-  }
-  else if (instead::has_cols(x, c("uy", "elp"))) {
-    len <- seq(from = 0, to = to, by = 1)
-    breaks <- start + len
-  } else {
-    stop("The combinations (uym + elpm or uy + elp) are not found.",
-         call. = FALSE)
-  }
-  caer <- NULL
-  ggline(data = x, x = elp_var, y = val_var, color = prd_var, group = prd_var) +
-    scale_color_gradientn(colours = grDevices::rainbow(length(len)),
-                          breaks = breaks) +
-    geom_hline(yintercept = 1, color = "red", linetype = "dashed") +
+  ggshort::ggline(data = x, x = .data[[elp_var]], y = .data[[val_var]],
+                  color = .data[[prd_var]], group = .data[[prd_var]]) +
+    ggshort::scale_color_by_month_gradientn() +
+    ggshort::geom_hline1() +
     facet_wrap(grp_var, scales = scales) +
     ggshort::switch_theme(theme = theme, ...)
 }
 
-#' @method plot aer.data
+#' @method plot aer
 #' @export
-plot.aer.data <- function(x, group_var, period_var = "uym",
+plot.aer <- function(x, group_var, period_var = "uym",
                           elapsed_var = "elpm", index_var = "caer",
                           scales = c("fixed", "free_y", "free_x", "free"),
                           theme = c("view", "save", "shiny"), ...) {
-  instead::assert_class(x, "aer.data")
+  instead::assert_class(x, "aer")
   grp_var <- instead::capture_names(x, !!rlang::enquo(group_var))
   prd_var <- instead::capture_names(x, !!rlang::enquo(period_var))
   elp_var <- instead::capture_names(x, !!rlang::enquo(elapsed_var))
@@ -256,7 +234,7 @@ plot.aer.data <- function(x, group_var, period_var = "uym",
   instead::assert_length(idx_var)
   scales <- match.arg(scales)
   theme <- match.arg(theme)
-  aer_uym_plot(x = x, group_var = !!grp_var, period_var = !!prd_var,
+  aer_plot(x = x, group_var = !!grp_var, period_var = !!prd_var,
                index_var = !!idx_var, elapsed_var = !!elp_var,
                scales = scales, theme = theme)
 }
@@ -265,7 +243,7 @@ plot.aer.data <- function(x, group_var, period_var = "uym",
 #'
 #' Draw mean of actual cumulative loss ratio
 #'
-#' @param x an aer.data object
+#' @param x an aer object
 #' @param group_var a name of the group variable
 #' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
 #' @param color_type a string of color type, base and deep
@@ -279,7 +257,7 @@ aer_mean_plot <- function(x, group_var, elapsed_var = "elpm",
                           color_type = c("base", "deep"),
                           scales = c("fixed", "free_y", "free_x", "free"),
                           theme = c("view", "save", "shiny"), ...) {
-  instead::assert_class(x, "aer.data.mean")
+  instead::assert_class(x, "aer_mean")
   elapsed <- rlang::ensym(elapsed_var)
   grp_var <- instead::capture_names(x, !!rlang::enquo(group_var))
   elp_var <- instead::capture_names(x, !!rlang::enquo(elapsed_var))
@@ -307,13 +285,13 @@ aer_mean_plot <- function(x, group_var, elapsed_var = "elpm",
     ggshort::switch_theme(theme = theme, ...)
 }
 
-#' @method plot aer.data.mean
+#' @method plot aer_mean
 #' @export
-plot.aer.data.mean <- function(x, group_var, elapsed_var = "elpm",
+plot.aer_mean <- function(x, group_var, elapsed_var = "elpm",
                                color_type = c("base", "deep"),
                                scales = c("fixed", "free_y", "free_x", "free"),
                                theme = c("view", "save", "shiny"), ...) {
-  instead::assert_class(x, "aer.data.mean")
+  instead::assert_class(x, "aer_mean")
   grp_var <- instead::capture_names(x, !!rlang::enquo(group_var))
   elp_var <- instead::capture_names(x, !!rlang::enquo(elapsed_var))
   instead::assert_length(elp_var)
@@ -328,7 +306,7 @@ plot.aer.data.mean <- function(x, group_var, elapsed_var = "elpm",
 #'
 #' Draw a median of actual cumulative loss ratio
 #'
-#' @param x an aer.data object
+#' @param x an aer object
 #' @param group_var a name of the group variable
 #' @param elapsed_var a name of the elapsed variable ("elpm", "elp")
 #' @param color_type a string of color type, base and deep
@@ -342,7 +320,7 @@ aer_median_plot <- function(x, group_var, elapsed_var = "elpm",
                             color_type = c("base", "deep"),
                             scales = c("fixed", "free_y", "free_x", "free"),
                             theme = c("view", "save", "shiny"), ...) {
-  instead::assert_class(x, "aer.data.median")
+  instead::assert_class(x, "aer_median")
   grp_var <- instead::capture_names(x, !!rlang::enquo(group_var))
   elp_var <- instead::capture_names(x, !!rlang::enquo(elapsed_var))
   instead::assert_length(elp_var)
@@ -370,13 +348,13 @@ aer_median_plot <- function(x, group_var, elapsed_var = "elpm",
     ggshort::switch_theme(theme = theme, ...)
 }
 
-#' @method plot aer.data.median
+#' @method plot aer_median
 #' @export
-plot.aer.data.median <- function(x, group_var, elapsed_var = "elpm",
-                                 color_type = c("base", "deep"),
-                                 scales = c("fixed", "free_y", "free_x", "free"),
-                                 theme = c("view", "save", "shiny"), ...) {
-  instead::assert_class(x, "aer.data.median")
+plot.aer_median <- function(x, group_var, elapsed_var = "elpm",
+                            color_type = c("base", "deep"),
+                            scales = c("fixed", "free_y", "free_x", "free"),
+                            theme = c("view", "save", "shiny"), ...) {
+  instead::assert_class(x, "aer_median")
   grp_var <- instead::capture_names(x, !!rlang::enquo(group_var))
   elp_var <- instead::capture_names(x, !!rlang::enquo(elapsed_var))
   instead::assert_length(elp_var)

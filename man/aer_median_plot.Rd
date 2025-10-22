@@ -15,7 +15,7 @@ aer_median_plot(
 )
 }
 \arguments{
-\item{x}{an aer.data object}
+\item{x}{an aer object}
 
 \item{group_var}{a name of the group variable}
 

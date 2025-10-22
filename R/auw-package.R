@@ -19,8 +19,8 @@
 #'   setcolorder setnames setorder setorderv uniqueN
 #' @importFrom grDevices rainbow
 #' @importFrom instead add_mon assert_class capture_names del_pattern draw_line
-#'   ensure_dt_env get_pattern has_cols has_ptr match_cols paste_cols paste_str
-#'   paste_uni_str replace_na_with_empty replace_na_with_zero
+#'   ensure_dt_env get_pattern has_cols has_ptr longer match_cols paste_cols
+#'   paste_str paste_uni_str replace_na_with_empty replace_na_with_zero
 #'   replace_cols_in_mat rm_cols rotate seq_list set_band set_dt set_tibble
 #'   unilen zeros
 #' @importFrom openxlsx createWorkbook saveWorkbook
