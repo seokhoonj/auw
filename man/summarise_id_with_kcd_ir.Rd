@@ -12,7 +12,7 @@ summarise_id_with_kcd_ir(
   from_var,
   to_var,
   uw_date,
-  decl1 = NULL,
+  decl = NULL,
   decl2 = NULL,
   decl3 = NULL,
   excl = NULL,
@@ -33,10 +33,10 @@ unquoted or character. Use \code{NULL} for no grouping.}
 
 \item{to_var}{End date column of each episode; unquoted or character.}
 
-\item{uw_date}{Underwriting date used as time zero; character \code{"YYYY-MM-DD"},
-\code{Date}, or \code{POSIXt}.}
+\item{uw_date}{Underwriting date used as time zero; \code{"YYYY-MM-DD"}, \code{Date}, \code{POSIXt},
+or a column in \code{cohort} (unquoted or character).}
 
-\item{decl1, decl2, decl3}{Optional declaration windows as lists of the form
+\item{decl, decl2, decl3}{Optional declaration windows as lists of the form
 \code{list(start_months, end_months, pattern)} where \code{start_months} is months
 \strong{before} \code{uw_date} (negative), \code{end_months} is months \strong{after} \code{uw_date}
 (positive), and \code{pattern} is a KCD code or regex (e.g., \code{"E1[0-4]"}).}
@@ -62,7 +62,7 @@ The main result prepends S3 class \code{"ir.data"}, the summary prepends \code{"
 \itemize{
 \item Column arguments accept both unquoted and character inputs; they are
 normalised with \code{instead::capture_names()} against the working \code{data.table}.
-\item Flags and summaries are computed by \code{summarise_id_with_kcd_terms()} and then
+\item Flags and summaries are computed by \code{summarise_id_with_kcd()} and then
 post-processed: multiple \verb{decl*} columns can be collapsed into a single
 \code{"decl"} factor for compactness.
 \item Attributes attached:
@@ -83,8 +83,8 @@ res <- summarise_id_with_kcd_ir(
   kcd_var   = kcd,
   from_var  = sdate,
   to_var    = edate,
-  uw_date     = "2018-07-01",
-  decl1     = list(-60, 0,  "I10"),
+  uw_date   = "2018-07-01",
+  decl      = list(-60, 0,  "I10"),
   decl2     = list(-60, 0,  "E78"),
   excl      = list(-60, 0,  "I2[0-5]|I6[0-9]|G46"),
   claim     = list(  0, 36, "I2[0-5]|I6[0-9]|G46")

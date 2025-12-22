@@ -238,12 +238,11 @@ add_kcd_name <- function(df, kcd_var, dots = TRUE, lang = c("ko", "en")) {
 #'
 #' @export
 get_diz_list <- function() {
-  nms <- local(ls(), envir = .AUW_ENV)
+  nms <- ls(.AUW_ENV, all.names = TRUE)
   diz <- lapply(nms, function(x) get(x, envir = .AUW_ENV))
   names(diz) <- nms
   diz
 }
-
 
 # Deprecated functions ----------------------------------------------------
 
@@ -260,7 +259,8 @@ get_diz_list <- function() {
 #'
 #' @seealso [add_kcd_sub()]
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 set_kcd_sub <- function(...) {
   lifecycle::deprecate_warn("0.0.0.9001", "set_kcd_sub()", "add_kcd_sub()")
   add_kcd_sub(...)
@@ -279,7 +279,8 @@ set_kcd_sub <- function(...) {
 #'
 #' @seealso [add_kcd_name()]
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 set_kcd_name <- function(...) {
   lifecycle::deprecate_warn("0.0.0.9001", "set_kcd_name()", "add_kcd_name()")
   add_kcd_name(...)

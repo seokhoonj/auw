@@ -26,13 +26,13 @@ library(instead)
 # set_ggshort_font("Comic Sans MS")
 
 cohort <- instead::read_rds("cohort.rds")
-mix    <- instead::read_rds("mix.rds")
-
-auw::add_age_band(cohort, age_var = age, interval = 10)
+icis   <- instead::read_rds("icis.rds")
 
 decl  <- list(-60,  0, "E1[0-4]")
 excl  <- list(-60,  0, "I2[0-5]|I6[0-9]|G46")
 claim <- list(  0, 36, "I2[0-5]|I6[0-9]|G46")
+                
+auw::add_age_band(cohort, age_var = age, interval = 10)
 
 data <- auw::summarise_id_with_kcd_ir(
   cohort = cohort,

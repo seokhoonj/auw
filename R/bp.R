@@ -29,7 +29,8 @@
 #' sys20 <- get_sys_bp_table(period = "2023")
 #' }
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 get_sys_bp_table <- function(age_interval = 5, period = "latest") {
   # systolic blood pressure
   sys_bp_table <- kosis::getStatData(
@@ -87,7 +88,8 @@ get_sys_bp_table <- function(age_interval = 5, period = "latest") {
 #' dia20 <- get_dia_bp_table(period = "2023")
 #' }
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 get_dia_bp_table <- function(age_interval = 5, period = "latest") {
   # diatolic blood pressure
   dia_bp_table <- kosis::getStatData(

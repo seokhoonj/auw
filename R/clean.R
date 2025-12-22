@@ -100,7 +100,8 @@ melt_kcd <- function(df, kcd_cols) {
 #'
 #' @seealso [add_age_band()]
 #'
-#' @export
+#' @keywords internal
+#' @noRd
 set_age_band <- function(...) {
   lifecycle::deprecate_warn("0.0.0.9001", "set_age_band()", "add_age_band()")
   add_age_band(...)

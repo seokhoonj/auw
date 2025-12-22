@@ -11,14 +11,6 @@ plot_ir(
   theme = c("view", "save", "shiny"),
   ...
 )
-
-plot_ir(
-  x,
-  palette = c("base", "deep"),
-  scales = c("fixed", "free_y", "free_x", "free"),
-  theme = c("view", "save", "shiny"),
-  ...
-)
 }
 \arguments{
 \item{x}{ir object.}
@@ -31,23 +23,10 @@ plot_ir(
 \item{theme}{A theme key for \code{ggshort::switch_theme()}: \code{"view"}, \code{"save"}, \code{"shiny"}.}
 
 \item{...}{Passed to \code{ggshort::switch_theme()}.}
-
-\item{color_type}{a string specifying a pair_color_type ("base", "deep")}
 }
 \value{
-a ggplot object
-
 A ggplot object.
 }
 \description{
 Draw an incidence rate plot.
-
-Draw an incidence rate plot.
-}
-\examples{
-# draw an incidence rate plot
-\dontrun{
-plot_ir(x)
-}
-
 }

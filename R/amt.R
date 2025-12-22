@@ -8,8 +8,7 @@
 #' @return a gtable object
 #'
 #' @export
-amt_plot <- function(amt_mix,
-                     label_args = list(size = 4),
+amt_plot <- function(amt_mix, label_args = list(size = 4),
                      theme = c("view", "save", "shiny")) {
 # to be updated -----------------------------------------------------------
 

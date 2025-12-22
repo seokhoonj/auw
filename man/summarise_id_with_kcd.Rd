@@ -29,8 +29,8 @@ unquoted or character. Use \code{NULL} if none.}
 
 \item{to_var}{End date column of each episode; unquoted or character.}
 
-\item{uw_date}{Underwriting date used as time zero; a scalar date-like
-(\code{"YYYY-MM-DD"}, \code{Date}, or \code{POSIXt}).}
+\item{uw_date}{Underwriting date used as time zero; \code{"YYYY-MM-DD"}, \code{Date}, \code{POSIXt},
+or a column in \code{cohort} (unquoted or character).}
 
 \item{...}{One or more KCD term windows, each as
 \code{list(start_months, end_months, pattern)} where \code{start_months} is
@@ -76,7 +76,7 @@ res <- summarise_id_with_kcd(
   kcd_var   = kcd,
   from_var  = sdate,
   to_var    = edate,
-  uw_date     = "2017-08-01",
+  uw_date   = "2017-08-01",
   hypertension = list(-60, 0,  "I10"),
   cv_event     = list(  0, 36, "I2[0-5]|I6[0-9]|G46")
 )
@@ -90,7 +90,7 @@ res2 <- summarise_id_with_kcd(
   kcd_var   = "kcd",
   from_var  = "sdate",
   to_var    = "edate",
-  uw_date     = "2017-08-01",
+  uw_date   = "2017-08-01",
   list(-60, 0, "I10")
 )
 }

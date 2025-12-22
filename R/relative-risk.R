@@ -80,10 +80,14 @@ subset_cohort_by_id_with_kcd <- function(cohort, id_var, kcd_var,
   kcd_var  <- instead::capture_names(dt, !!rlang::enquo(kcd_var))
   from_var <- instead::capture_names(dt, !!rlang::enquo(from_var))
   to_var   <- instead::capture_names(dt, !!rlang::enquo(to_var))
+
+  uw_date  <- .resolve_uw_date(dt, !!rlang::enquo(uw_date))
+
+  fdate <- instead::add_mon(uw_date, start)
+  tdate <- instead::add_mon(uw_date, end)
+
   dots <- rlang::list2(...)
   for (i in seq_along(dots)) {
-    fdate <- instead::add_mon(uw_date, start)
-    tdate <- instead::add_mon(uw_date, end)
     key <- instead::get_pattern("^!", dots[[i]])
     diz <- instead::del_pattern("^!", dots[[i]])
     if (key == "") {
@@ -117,8 +121,8 @@ subset_cohort_by_id_with_kcd <- function(cohort, id_var, kcd_var,
 #' @param kcd_var Column with KCD codes; unquoted or character.
 #' @param from_var Start date column of each episode; unquoted or character.
 #' @param to_var End date column of each episode; unquoted or character.
-#' @param uw_date Underwriting date used as time zero; a scalar date-like
-#'   (`"YYYY-MM-DD"`, `Date`, or `POSIXt`).
+#' @param uw_date Underwriting date used as time zero; `"YYYY-MM-DD"`, `Date`, `POSIXt`,
+#'   or a column in `cohort` (unquoted or character).
 #' @param ... One or more KCD term windows, each as
 #'   `list(start_months, end_months, pattern)` where `start_months` is
 #'   months **before** `uw_date` (negative), `end_months` is months
@@ -150,7 +154,7 @@ subset_cohort_by_id_with_kcd <- function(cohort, id_var, kcd_var,
 #'   kcd_var   = kcd,
 #'   from_var  = sdate,
 #'   to_var    = edate,
-#'   uw_date     = "2017-08-01",
+#'   uw_date   = "2017-08-01",
 #'   hypertension = list(-60, 0,  "I10"),
 #'   cv_event     = list(  0, 36, "I2[0-5]|I6[0-9]|G46")
 #' )
@@ -164,7 +168,7 @@ subset_cohort_by_id_with_kcd <- function(cohort, id_var, kcd_var,
 #'   kcd_var   = "kcd",
 #'   from_var  = "sdate",
 #'   to_var    = "edate",
-#'   uw_date     = "2017-08-01",
+#'   uw_date   = "2017-08-01",
 #'   list(-60, 0, "I10")
 #' )
 #' }
@@ -185,9 +189,10 @@ summarise_id_with_kcd <- function(cohort, id_var, group_var, kcd_var,
   kcd_var   <- instead::capture_names(dt, !!rlang::enquo(kcd_var))
   from_var  <- instead::capture_names(dt, !!rlang::enquo(from_var))
   to_var    <- instead::capture_names(dt, !!rlang::enquo(to_var))
-  id_group_var <- c(id_var, group_var)
+  uw_date   <- .resolve_uw_date(dt, !!rlang::enquo(uw_date))
   kcd_terms <- rlang::list2(...)
 
+  id_group_var <- c(id_var, group_var)
 
   n <- length(kcd_terms)
   id_list <- vector(mode = "list", length = n + 1L)
@@ -258,9 +263,9 @@ summarise_id_with_kcd <- function(cohort, id_var, group_var, kcd_var,
 #' @param kcd_var Column with KCD codes; unquoted or character.
 #' @param from_var Start date column of each episode; unquoted or character.
 #' @param to_var End date column of each episode; unquoted or character.
-#' @param uw_date Underwriting date used as time zero; character `"YYYY-MM-DD"`,
-#'   `Date`, or `POSIXt`.
-#' @param decl1,decl2,decl3 Optional declaration windows as lists of the form
+#' @param uw_date Underwriting date used as time zero; `"YYYY-MM-DD"`, `Date`, `POSIXt`,
+#'   or a column in `cohort` (unquoted or character).
+#' @param decl,decl2,decl3 Optional declaration windows as lists of the form
 #'   `list(start_months, end_months, pattern)` where `start_months` is months
 #'   **before** `uw_date` (negative), `end_months` is months **after** `uw_date`
 #'   (positive), and `pattern` is a KCD code or regex (e.g., `"E1[0-4]"`).
@@ -270,7 +275,7 @@ summarise_id_with_kcd <- function(cohort, id_var, group_var, kcd_var,
 #' @details
 #' - Column arguments accept both unquoted and character inputs; they are
 #'   normalised with `instead::capture_names()` against the working `data.table`.
-#' - Flags and summaries are computed by `summarise_id_with_kcd_terms()` and then
+#' - Flags and summaries are computed by `summarise_id_with_kcd()` and then
 #'   post-processed: multiple `decl*` columns can be collapsed into a single
 #'   `"decl"` factor for compactness.
 #' - Attributes attached:
@@ -292,8 +297,8 @@ summarise_id_with_kcd <- function(cohort, id_var, group_var, kcd_var,
 #'   kcd_var   = kcd,
 #'   from_var  = sdate,
 #'   to_var    = edate,
-#'   uw_date     = "2018-07-01",
-#'   decl1     = list(-60, 0,  "I10"),
+#'   uw_date   = "2018-07-01",
+#'   decl      = list(-60, 0,  "I10"),
 #'   decl2     = list(-60, 0,  "E78"),
 #'   excl      = list(-60, 0,  "I2[0-5]|I6[0-9]|G46"),
 #'   claim     = list(  0, 36, "I2[0-5]|I6[0-9]|G46")
@@ -307,7 +312,7 @@ summarise_id_with_kcd <- function(cohort, id_var, group_var, kcd_var,
 #' @export
 summarise_id_with_kcd_ir <- function(cohort, id_var, group_var, kcd_var,
                                      from_var, to_var, uw_date,
-                                     decl1 = NULL, decl2 = NULL, decl3 = NULL,
+                                     decl = NULL, decl2 = NULL, decl3 = NULL,
                                      excl = NULL, claim = NULL) {
   instead::assert_class(cohort, "data.frame")
 
@@ -319,7 +324,11 @@ summarise_id_with_kcd_ir <- function(cohort, id_var, group_var, kcd_var,
   kcd_var   <- instead::capture_names(dt, !!rlang::enquo(kcd_var))
   from_var  <- instead::capture_names(dt, !!rlang::enquo(from_var))
   to_var    <- instead::capture_names(dt, !!rlang::enquo(to_var))
+  uw_date   <- .resolve_uw_date(dt, uw_date)
+
   id_group_var <- c(id_var, group_var)
+
+  decl1 <- decl; rm(decl)
 
   dots <- rlang::list2(
     decl1 = decl1, decl2 = decl2, decl3 = decl3, excl = excl, claim = claim
@@ -350,7 +359,7 @@ summarise_id_with_kcd_ir <- function(cohort, id_var, group_var, kcd_var,
   data.table::setattr(smr, "claim", claim[[3L]])
   data.table::setattr(ds, "summary", smr)
 
-  smr_i_list <- instead::regex_attr(ds, "summary\\.\\d")
+  smr_i_list <- instead::regex_attr(ds, "summary_\\d")
   for (smr_i in smr_i_list) {
     ds_smr_i <- attr(ds, smr_i)
     ds_smr_i <- env$restore(ds_smr_i)
@@ -368,112 +377,6 @@ summarise_id_with_kcd_ir <- function(cohort, id_var, group_var, kcd_var,
 #' @export
 summary.ir.data <- function(object, ...) {
   attr(object, "summary")
-}
-
-#' Incidence Rate Plot
-#'
-#' Draw an incidence rate plot.
-#'
-#' @param x ir object
-#' @param color_type a string specifying a pair_color_type ("base", "deep")
-#' @param scales Should scales be fixed ("fixed", the default), free ("free"),
-#' or free in one dimension ("free_x", "free_y")?
-#' @param theme a string specifying a [ggshort::switch_theme()] function ("view", "save", "shiny")
-#' @return a ggplot object
-#'
-#' @examples
-#' # draw an incidence rate plot
-#' \dontrun{
-#' plot_ir(x)
-#' }
-#'
-#' @export
-plot_ir <- function(x, group_var, palette = c("base", "deep"),
-                    scales = c("fixed", "free_y", "free_x", "free"),
-                    theme = c("view", "save", "shiny"), ...) {
-  instead::assert_class(x, "ir")
-
-  palette <- match.arg(palette)
-  scales  <- match.arg(scales)
-
-  decl  <- attr(x, "decl")
-  excl  <- attr(x, "excl")
-  claim <- attr(x, "claim")
-
-  title <- "Incidence Rate"
-  subtitle <- sprintf("Decl: %s / Excl: %s / Claim: %s", decl, excl, claim)
-
-  data <- x[x$excl == 0 & x$claim == 1,]
-
-  if (instead::has_cols(data, c("gender", "age_band")))
-    return(
-      ggshort::ggbar(data, x = .data$age_band, y = .data$ratio, fill = .data$decl) +
-        ggshort::scale_fill_pair_manual(palette = palette) +
-        ggplot2::facet_wrap(~ gender) +
-        ggplot2::labs(title = title, subtitle = subtitle) +
-        ggshort::switch_theme(theme = theme, x.angle = 90, y.size = 0)
-    )
-  if (instead::has_cols(data, "gender") & !instead::has_cols(data, "age_band"))
-    return(
-      ggshort::ggbar(data, x = .data$gender, y = .data$ratio, fill = .data$decl) +
-        ggshort::scale_fill_pair_manual(palette = palette) +
-        ggplot2::labs(title = title, subtitle = subtitle) +
-        ggshort::switch_theme(theme = theme, y.size = 0)
-    )
-  if (!instead::has_cols(data, "gender") & instead::has_cols(data, "age_band"))
-    return(
-      ggshort::ggbar(data, x = .data$age_band, y = .data$ratio, fill = .data$decl) +
-        ggshort::scale_fill_pair_manual(palette = palette) +
-        ggplot2::labs(title = title, subtitle = subtitle) +
-        ggshort::switch_theme(theme = theme, x.angle = 90, y.size = 0)
-    )
-  if (!instead::has_cols(data, "gender") & !instead::has_cols(data, "age_band"))
-    return(
-      ggshort::ggbar(data, x = .data$decl, y = .data$ratio, fill = .data$decl) +
-        ggshort::scale_fill_pair_manual(palette = palette) +
-        ggplot2::labs(title = title, subtitle = subtitle) +
-        ggshort::switch_theme(theme = theme, y.size = 0)
-    )
-}
-
-#' Summarise relative risk from IR objects
-#'
-#' Compute relative risk (RR) and odds ratio (OR) with confidence intervals
-#' from `ir` / `ir.data` objects by comparing two declaration levels.
-#'
-#' Internally, counts are reshaped into 2×2 contingency tables per stratum,
-#' RR CIs are computed by a Wald method, and OR CIs and p-values by Fisher's
-#' exact test. Results are returned per stratum with attributes describing the
-#' declaration/exclusion/claim patterns and the contingency array.
-#'
-#' @param x An `ir` or `ir.data` object.
-#' @param ... Passed to class-specific methods.
-#'
-#' @return A data frame (same base class as the input's restored table) with
-#'   prepended class `"rr"`. Columns include:
-#'   - `tp, fn, fp, tn`: 2×2 cell counts,
-#'   - `inc0, inc1`: incidence in reference vs. exposed groups,
-#'   - `rr, rr_lower, rr_upper`: RR and its CI (Wald),
-#'   - `or, or_lower, or_upper`: OR and its CI (Fisher),
-#'   - `p_value`: Fisher exact p-value,
-#'   - `decision`: factor `"reject"` / `"fail"` for `H0: OR = 1`.
-#'
-#'   Attributes:
-#'   - `attr(x, "decl")`, `attr(x, "excl")`, `attr(x, "claim")`,
-#'   - `attr(x, "cmatrix")`: a 2×2×K contingency array with dimnames
-#'     `c("exp+","exp-")`, `c("out+","out-")`, and per-stratum labels.
-#'
-#' @examples
-#' \dontrun{
-#' # x: an 'ir' object created upstream
-#' out <- summarise_rr(x, decl_vs = c("0","1"), conf.level = 0.95)
-#' head(out)
-#' attr(out, "cmatrix")
-#' }
-#'
-#' @export
-summarise_rr <- function(x, ...) {
-  UseMethod("summarise_rr")
 }
 
 #' Get relative risks (core engine)
@@ -593,6 +496,46 @@ summarise_rr <- function(x, ...) {
   dm <- env$restore(dm)
 
   dm
+}
+
+#' Summarise relative risk from IR objects
+#'
+#' Compute relative risk (RR) and odds ratio (OR) with confidence intervals
+#' from `ir` / `ir.data` objects by comparing two declaration levels.
+#'
+#' Internally, counts are reshaped into 2×2 contingency tables per stratum,
+#' RR CIs are computed by a Wald method, and OR CIs and p-values by Fisher's
+#' exact test. Results are returned per stratum with attributes describing the
+#' declaration/exclusion/claim patterns and the contingency array.
+#'
+#' @param x An `ir` or `ir.data` object.
+#' @param ... Passed to class-specific methods.
+#'
+#' @return A data frame (same base class as the input's restored table) with
+#'   prepended class `"rr"`. Columns include:
+#'   - `tp, fn, fp, tn`: 2×2 cell counts,
+#'   - `inc0, inc1`: incidence in reference vs. exposed groups,
+#'   - `rr, rr_lower, rr_upper`: RR and its CI (Wald),
+#'   - `or, or_lower, or_upper`: OR and its CI (Fisher),
+#'   - `p_value`: Fisher exact p-value,
+#'   - `decision`: factor `"reject"` / `"fail"` for `H0: OR = 1`.
+#'
+#'   Attributes:
+#'   - `attr(x, "decl")`, `attr(x, "excl")`, `attr(x, "claim")`,
+#'   - `attr(x, "cmatrix")`: a 2×2×K contingency array with dimnames
+#'     `c("exp+","exp-")`, `c("out+","out-")`, and per-stratum labels.
+#'
+#' @examples
+#' \dontrun{
+#' # x: an 'ir' object created upstream
+#' out <- summarise_rr(x, decl_vs = c("0","1"), conf.level = 0.95)
+#' head(out)
+#' attr(out, "cmatrix")
+#' }
+#'
+#' @export
+summarise_rr <- function(x, ...) {
+  UseMethod("summarise_rr")
 }
 
 #' @rdname summarise_rr
@@ -835,7 +778,7 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
     data = res,
     wb = wb,
     sheet = sheet,
-    rc = c(7, 2),
+    rc = c(7L, 2L),
     row_space = 6,
     row_names = FALSE,
     font_size = 11,
@@ -850,13 +793,14 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
   )
 
   # loadings
-  loadings = rr[!is.nan(rr), .(age_band, rr, lower = rr_lower, upper = rr_upper, p_value, decision)]
+  loadings <- rr[!is.nan(rr), .(age_band, rr, lower = rr_lower, upper = rr_upper, p_value, decision)]
   loadings[, loading := rr - 1]
   loadings[mix, on = .(age_band), wt := wt]
-  loadings[, wt_loading := rr * wt]
 
   loadings_list <- lapply(1:(nrow(loadings)-1), function(i) {
-    as.data.frame(loadings[i:nrow(loadings)])
+    loading <- data.table::as.data.table(loadings[i:nrow(loadings)])
+    loading[, wt := wt / sum(wt)]
+    loading[, wt_loading := rr * wt]
   })
 
   .get_age_band_range <- function(x) {
@@ -903,6 +847,20 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
 }
 
 # Internal helper functions -----------------------------------------------
+
+.resolve_uw_date <- function(dt, uw_date) {
+  uw_quo  <- rlang::enquo(uw_date)
+  uw_col <- tryCatch(
+    instead::capture_names(dt, !!uw_quo),
+    error = function(e) NULL
+  )
+
+  if (!is.null(uw_col)) return(dt[[uw_col]])
+
+  uw_val <- rlang::eval_tidy(uw_quo)
+  uw_val <- if (inherits(uw_val, "Date")) uw_val else as.Date(uw_val)
+  uw_val[1L]
+}
 
 #' Wald confidence interval for Relative Risk (RR)
 #'

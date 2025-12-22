@@ -75,21 +75,9 @@ get_stat_alr <- function(df,
   env$restore(ds[])
 }
 
-#' Longer data structure
-#'
-#' Make a data structure longer
-#'
-#' @param data a data.frame
-#' @param ... further arguments passed to or from other methods.
-#'
-#' @export
-longer <- function(data, ...) {
-  UseMethod("longer")
-}
-
 #' @method longer alr.data
 #' @export
-longer.alr.data <- function(data, ...) {
+longer.alr.data <- function(x, ...) {
   instead::assert_class(data, "alr.data")
   attr(data, "longer")
 }
