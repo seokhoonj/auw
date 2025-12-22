@@ -1,6 +1,8 @@
 # auw
 
-<img src="man/figures/auw-hex.png" width="200"/>
+<!-- Pandoc/PDF/Word용 -->
+
+![](man/figures/auw-hex.png){width="200px"}
 
 <!-- badges: start -->
 
@@ -42,7 +44,7 @@ data <- auw::summarise_id_with_kcd_ir(
   from_var = sdate,
   to_var = edate,
   uw_date = as.Date("2017-08-01"),
-  decl1 = decl,
+  decl  = decl,
   excl  = excl,
   claim = claim
 )
@@ -50,8 +52,24 @@ data <- auw::summarise_id_with_kcd_ir(
 ir <- summary(data)
 rr <- auw::summarise_rr(ir)
 
+icis_mix_data <- auw::summarise_id_with_kcd_ir(
+  cohort    = icis,
+  id_var    = id,
+  group_var = .(age_band),
+  kcd_var   = kcd,
+  from_var  = sdate,
+  to_var    = edate,
+  uw_date   = uw_date,
+  decl      = decl,
+  excl      = excl
+)
+
+icis_mix <- summary(icis_mix_data)
+
+# auw::save_rr_xlsx(ir, rr, icis_mix, file = "RR.xlsx", overwrite = TRUE)
+
 plot(ir)
 plot(rr)
 ```
 
-<img src="man/figures/ir_plot.png"/> <img src="man/figures/rr_plot.png"/>
+![](man/figures/ir_plot.png) ![](man/figures/rr_plot.png)
