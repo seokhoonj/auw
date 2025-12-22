@@ -1,8 +1,9 @@
 # auw
 
-<!-- Pandoc/PDF/Word용 -->
+<img src="man/figures/auw-hex.png" width="200"/>
 
-![](man/figures/auw-hex.png){width="200px"}
+<!-- Pandoc/PDF/Word용 -->
+<!--![](man/figures/auw-hex.png){ width=200px }>
 
 <!-- badges: start -->
 
