@@ -40,7 +40,7 @@ variable from \code{attr(x, "elapsed_var")}. SE bands are drawn using the
 \verb{*_se_lwr} and \verb{*_se_upp} columns.
 }
 \examples{
-\donttest{
+\dontrun{
 mt <- mean(aer_obj)
 plot_aer_mean(mt, value_var = "aer", theme = "view")
 }

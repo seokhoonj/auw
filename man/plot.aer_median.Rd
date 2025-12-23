@@ -35,7 +35,7 @@ S3 method for \code{\link[=plot]{plot()}} that delegates to \code{\link[=plot_ae
 class \code{aer_median}.
 }
 \examples{
-\donttest{
+\dontrun{
 mt <- median(aer_obj)
 plot(mt)  # equivalent to plot_aer_median(mt)
 }

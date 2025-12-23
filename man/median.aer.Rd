@@ -34,7 +34,7 @@ The function expects the input to be a \code{data.table}-like object with column
 }
 }
 \examples{
-\donttest{
+\dontrun{
 mt <- median(aer_obj)
 head(mt)
 }
