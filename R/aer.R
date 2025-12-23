@@ -237,7 +237,7 @@ longer.aer <- function(x, ...) {
 #' include `aer_mean` (via `instead::update_class()`).
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' mt <- mean(aer_obj)
 #' head(mt)
 #' }
@@ -292,7 +292,7 @@ mean.aer <- function(x, ...) {
 #' @return A `ggplot` object.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' mt <- mean(aer_obj)
 #' plot_aer_mean(mt, value_var = "aer", theme = "view")
 #' }
@@ -358,7 +358,7 @@ plot_aer_mean <- function(x,
 #' @seealso [plot_aer_mean()], [mean.aer()]
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' mt <- mean(aer_obj)
 #' plot(mt)  # equivalent to plot_aer_mean(mt)
 #' }
@@ -407,7 +407,7 @@ plot.aer_mean <- function(x,
 #' include `aer_median` (via `instead::update_class()`).
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' mt <- median(aer_obj)
 #' head(mt)
 #' }
@@ -462,7 +462,7 @@ median.aer <- function(x, ...) {
 #' @return A `ggplot` object.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' mt <- median(aer_obj)
 #' plot_aer_median(mt, value_var = "aer", theme = "view")
 #' }
@@ -528,7 +528,7 @@ plot_aer_median <- function(x,
 #' @seealso [plot_aer_median()], [median.aer()]
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' mt <- median(aer_obj)
 #' plot(mt)  # equivalent to plot_aer_median(mt)
 #' }

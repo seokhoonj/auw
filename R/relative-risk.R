@@ -359,7 +359,133 @@ summarise_id_with_kcd_ir <- function(cohort, id_var, group_var, kcd_var,
   data.table::setattr(smr, "claim", claim[[3L]])
   data.table::setattr(ds, "summary", smr)
 
-  smr_i_list <- instead::regex_attr(ds, "summary_\\d")
+  smr_i_list <- instead::regex_attr(ds, "summary.\\d")
+  for (smr_i in smr_i_list) {
+    ds_smr_i <- attr(ds, smr_i)
+    ds_smr_i <- env$restore(ds_smr_i)
+    data.table::setattr(ds, smr_i, ds_smr_i)
+  }
+
+  raw <- attr(ds, "raw")
+  raw <- env$restore(raw)
+  data.table::setattr(ds, "raw", raw)
+
+  ds
+}
+
+#' Summarise IDs by KCD terms to support "Mix" calculation (class-preserving)
+#'
+#' From an episode-level cohort (multiple rows per ID with `[from, to]` and `kcd`),
+#' produce an **ID-level summary table** with 0/1 flags for each specified KCD
+#' window around `uw_date`. Internally converts to data.table (via
+#' [instead::ensure_dt_env()]) for speed, then restores both the main result and the
+#' summaries to the original base class of `df` (data.frame / tibble / data.table).
+#' The main result prepends S3 class `"mix.data"`, the summary prepends `"mix"`.
+#'
+#' @param cohort A cohort data frame at **episode level** (multiple rows per ID).
+#' @param id_var ID column; unquoted (e.g., `id`) or character (e.g., `"id"`).
+#' @param group_var Optional grouping column (e.g., age band, gender);
+#'   unquoted or character. Use `NULL` for no grouping.
+#' @param kcd_var Column with KCD codes; unquoted or character.
+#' @param from_var Start date column of each episode; unquoted or character.
+#' @param to_var End date column of each episode; unquoted or character.
+#' @param uw_date Underwriting date used as time zero; `"YYYY-MM-DD"`, `Date`, `POSIXt`,
+#'   or a column in `cohort` (unquoted or character).
+#' @param decl,decl2,decl3 Optional declaration windows as lists of the form
+#'   `list(start_months, end_months, pattern)` where `start_months` is months
+#'   **before** `uw_date` (negative), `end_months` is months **after** `uw_date`
+#'   (positive), and `pattern` is a KCD code or regex (e.g., `"E1[0-4]"`).
+#' @param excl Optional exclusion window, same list form.
+#' @param claim Optional claim window, same list form.
+#'
+#' @details
+#' - Column arguments accept both unquoted and character inputs; they are
+#'   normalised with `instead::capture_names()` against the working `data.table`.
+#' - Flags and summaries are computed by `summarise_id_with_kcd()` and then
+#'   post-processed: multiple `decl*` columns can be collapsed into a single
+#'   `"decl"` factor for compactness.
+#' - Attributes attached:
+#'   * `attr(x, "summary")`: first-level summary (restored, class-prepended `"mix"`).
+#'   * `attr(x, "summary.N")`: deeper summaries, if present (restored).
+#'   * `attr(x, "raw")`: contingency table at the lowest level, if present (restored).
+#'   * On the summary: `"decl"`, `"excl"`, `"claim"` strings if provided.
+#'
+#' @return An object of the same base class as `df`, with prepended class `"mix.data"`.
+#'   One row per ID(+group) and 0/1 KCD flag columns. A restored summary is available
+#'   at `attr(result, "summary")` (class-prepended `"mix"`).
+#'
+#' @examples
+#' \dontrun{
+#' res <- summarise_id_with_kcd_mix(
+#'   cohort    = cohort,
+#'   id_var    = id,
+#'   group_var = age_band,
+#'   kcd_var   = kcd,
+#'   from_var  = sdate,
+#'   to_var    = edate,
+#'   uw_date   = "2018-07-01",
+#'   decl      = list(-60, 0,  "I10"),
+#'   decl2     = list(-60, 0,  "E78"),
+#'   excl      = list(-60, 0,  "I2[0-5]|I6[0-9]|G46"),
+#'   claim     = list(  0, 36, "I2[0-5]|I6[0-9]|G46")
+#' )
+#' class(res)          # includes "mix.data"
+#' class(summary(res)) # includes "mix"
+#' }
+#'
+#' @seealso [summarise_id_with_kcd()], [instead::ensure_dt_env()], [instead::capture_names()]
+#'
+#' @export
+summarise_id_with_kcd_mix <- function(cohort, id_var, group_var, kcd_var,
+                                      from_var, to_var, uw_date,
+                                      decl = NULL, decl2 = NULL, decl3 = NULL,
+                                      excl = NULL, claim = NULL) {
+  instead::assert_class(cohort, "data.frame")
+
+  env <- instead::ensure_dt_env(cohort)
+  dt <- env$dt
+
+  id_var    <- instead::capture_names(dt, !!rlang::enquo(id_var))
+  group_var <- instead::capture_names(dt, !!rlang::enquo(group_var))
+  kcd_var   <- instead::capture_names(dt, !!rlang::enquo(kcd_var))
+  from_var  <- instead::capture_names(dt, !!rlang::enquo(from_var))
+  to_var    <- instead::capture_names(dt, !!rlang::enquo(to_var))
+  uw_date   <- .resolve_uw_date(dt, uw_date)
+
+  id_group_var <- c(id_var, group_var)
+
+  decl1 <- decl; rm(decl)
+
+  dots <- rlang::list2(
+    decl1 = decl1, decl2 = decl2, decl3 = decl3, excl = excl, claim = claim
+  )
+  dots <- dots[sapply(dots, function(x) !is.null(x))]
+
+  ds <- summarise_id_with_kcd(
+    dt, id_var = id_var, group_var = group_var,
+    kcd_var = kcd_var, from_var = from_var, to_var = to_var,
+    uw_date = uw_date, !!!dots  # essential !!!
+  )
+  smr <- .summary_tail(ds)
+  decl_cols <- names(smr)[grepl("^decl", names(smr), perl = TRUE)]
+  smr$decl <- instead::paste_cols(smr, decl_cols, sep = "+")
+  smr$decl <- as.factor(smr$decl)
+  instead::rm_cols(smr, decl_cols)
+  data.table::setcolorder(smr, "decl", before = "excl")
+  decl <- list(decl1[[3L]], decl2[[3L]], decl3[[3L]])
+  decl <- decl[sapply(decl, function(x) !is.null(x))]
+
+  ds <- env$restore(ds)
+  ds <- instead::prepend_class(ds, "mix.data")
+
+  smr <- env$restore(smr)
+  smr <- instead::prepend_class(smr, "mix")
+  data.table::setattr(smr, "decl", paste(decl, collapse = " & "))
+  data.table::setattr(smr, "excl", excl[[3L]])
+  data.table::setattr(smr, "claim", claim[[3L]])
+  data.table::setattr(ds, "summary", smr)
+
+  smr_i_list <- instead::regex_attr(ds, "summary.\\d")
   for (smr_i in smr_i_list) {
     ds_smr_i <- attr(ds, smr_i)
     ds_smr_i <- env$restore(ds_smr_i)
@@ -377,6 +503,15 @@ summarise_id_with_kcd_ir <- function(cohort, id_var, group_var, kcd_var,
 #' @export
 summary.ir.data <- function(object, ...) {
   attr(object, "summary")
+}
+
+#' @method summary mix.data
+#' @export
+summary.mix.data <- function(object, decl_level = 1, ...) {
+  smr <- attr(object, "summary")
+  smr <- smr[smr$decl == decl_level & smr$excl == 0]
+  data.table::set(smr, j = "wt", value = smr$n / sum(smr$n))
+  smr
 }
 
 #' Get relative risks (core engine)
@@ -803,6 +938,10 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
     loading[, wt_loading := rr * wt]
   })
 
+  total_list <- lapply(loadings_list, function(df) {
+    sum(df$wt_loading, na.rm = TRUE)
+  })
+
   .get_age_band_range <- function(x) {
     if (is.factor(x))
       x <- as.character(sort(x))
@@ -826,6 +965,41 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
     auto_width = FALSE
   )
 
+  # Cautions!!
+  # --- write ONLY the total cell under wt_loading for each table ---
+  row_spacer <- 2L  # `save_data_wb()` default value
+  start0 <- c(2L, 7L)
+
+  wt_idx <- match("wt_loading", names(loadings_list[[1]]))
+  if (is.na(wt_idx)) stop("Column 'wt_loading' not found.", call. = FALSE)
+  total_col <- start0[2L] + wt_idx - 1L
+
+  cur_row <- start0[1L]
+
+  for (i in seq_along(loadings_list)) {
+    title_h <- if (!is.na(titles[[i]]) && nzchar(titles[[i]])) 1L else 0L
+
+    table_start_row <- cur_row + title_h
+    n_header <- 1L
+    n_body   <- nrow(loadings_list[[i]])
+    table_end_row <- table_start_row + n_header + n_body - 1L
+
+    tot <- sum(loadings_list[[i]]$wt_loading, na.rm = TRUE)
+
+    wb <- instead::write_cell(
+      wb, sheet,
+      rc = c(table_end_row + 1L, total_col),
+      value = round(tot, 2),
+      underline = TRUE,
+      font_name = getOption("instead.font"),
+      font_size = 11,
+      h_align = "right",
+      v_align = "center"
+    )
+
+    cur_row <- cur_row + title_h + n_header + n_body + row_spacer
+  }
+
   # plots
   p_ir <- plot_ir(ir, palette = "base")
   p_rr <- plot_rr(rr, palette = "base")
@@ -847,6 +1021,22 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
 }
 
 # Internal helper functions -----------------------------------------------
+
+.summary_head <- function(x) {
+  nms <- instead::regex_attr(x, "summary\\.\\d+")
+  if (!length(nms)) return(NULL)
+
+  nums <- as.integer(sub("summary\\.", "", nms))
+  attr(x, nms[which.min(nums)])
+}
+
+.summary_tail <- function(x) {
+  nms <- instead::regex_attr(x, "summary\\.\\d+")
+  if (!length(nms)) return(NULL)
+
+  nums <- as.integer(sub("summary\\.", "", nms))
+  attr(x, nms[which.max(nums)])
+}
 
 .resolve_uw_date <- function(dt, uw_date) {
   uw_quo  <- rlang::enquo(uw_date)
