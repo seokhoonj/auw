@@ -935,7 +935,7 @@ save_rr_xlsx <- function(ir, rr, mix, file = "RR.xlsx", sheet = "RR", overwrite 
   loadings_list <- lapply(1:(nrow(loadings)-1), function(i) {
     loading <- data.table::as.data.table(loadings[i:nrow(loadings)])
     loading[, wt := wt / sum(wt)]
-    loading[, wt_loading := rr * wt]
+    loading[, wt_loading := loading * wt]
   })
 
   total_list <- lapply(loadings_list, function(df) {
