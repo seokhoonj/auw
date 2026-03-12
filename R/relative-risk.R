@@ -1,4 +1,3 @@
-
 #' Subset a cohort **by IDs** flagged for KCD within an underwriting window
 #'
 #' Select **all rows for IDs** who had at least one record with specified

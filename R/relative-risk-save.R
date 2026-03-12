@@ -91,7 +91,7 @@ save_rr_wb <- function(wb, sheet, ir, rr, mh = NULL, ms = NULL, mix) {
   mh_list <- .build_loading_tables(mh, mix, metric = "mr", suffix_min_nrow = 2L)
   ms_list <- .build_loading_tables(ms, mix, metric = "mr", suffix_min_nrow = 2L)
 
-  if (!is.null(mr_hos_list)) {
+  if (!is.null(mh_list)) {
     wb <- .save_mr_loading_block_wb(
       wb            = wb,
       sheet         = sheet,
@@ -102,7 +102,7 @@ save_rr_wb <- function(wb, sheet, ir, rr, mh = NULL, ms = NULL, mix) {
     )
   }
 
-  if (!is.null(mr_sur_list)) {
+  if (!is.null(ms_list)) {
     wb <- .save_mr_loading_block_wb(
       wb            = wb,
       sheet         = sheet,
@@ -119,10 +119,10 @@ save_rr_wb <- function(wb, sheet, ir, rr, mh = NULL, ms = NULL, mix) {
     p_list[["Incidence Rate"]]   <- plot_ir(ir, palette = "base")
   if (!is.null(rr))
     p_list[["Relative Risk"]]    <- plot_rr(rr, palette = "base")
-  if (!is.null(mr_hos))
-    p_list[["Mean Ratio - HOS"]] <- plot_mr(mr_hos, logscale = FALSE)
-  if (!is.null(mr_sur))
-    p_list[["Mean Ratio - SUR"]] <- plot_mr(mr_sur, logscale = FALSE)
+  if (!is.null(mh))
+    p_list[["Mean Ratio - HOS"]] <- plot_mr(mh, logscale = FALSE)
+  if (!is.null(ms))
+    p_list[["Mean Ratio - SUR"]] <- plot_mr(ms, logscale = FALSE)
 
   ggshort::suppress_geom_removed_warnings({
     wb <- instead::save_plot_wb(
@@ -435,8 +435,8 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
         wb     = wb,
         sheet  = plan,
         rr     = rr,
-        mr_hos = mh,
-        mr_sur = ms,
+        mh     = mh,
+        ms     = ms,
         mix    = mix
       )
     }
@@ -819,7 +819,7 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
   invisible(wb)
 }
 
-.save_object_block_wb <- function(wb, sheet, rr, mr_hos = NULL, mr_sur = NULL,
+.save_object_block_wb <- function(wb, sheet, rr, mh = NULL, ms = NULL,
                                   mix, rc = c(2, 28)) {
   wb <- instead::write_cell(
     wb        = wb,
@@ -838,9 +838,9 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
 
   data_list <- list()
   data_list[["Relative Risk"]] <- rr
-  if (!is.null(mr_hos)) data_list[["Mean Ratio - HOS"]] <- mr_hos
-  if (!is.null(mr_sur)) data_list[["Mean Ratio - SUR"]] <- mr_sur
-  if (!is.null(mix))    data_list[["ICIS Mix"]] <- mix
+  if (!is.null(mh))  data_list[["Mean Ratio - HOS"]] <- mh
+  if (!is.null(ms))  data_list[["Mean Ratio - SUR"]] <- ms
+  if (!is.null(mix)) data_list[["ICIS Mix"]] <- mix
 
   data_titles <- names(data_list)
 
