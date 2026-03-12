@@ -607,14 +607,15 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
 
   # --- ctable section title ---
   wb <- instead::write_cell(
-    wb, sheet,
-    x = "2x2 Contingency Table",
-    rc = rc_ctable,
-    bold = TRUE,
+    wb        = wb,
+    sheet     = sheet,
+    x         = "2x2 Contingency Table",
+    rc        = rc_ctable,
+    bold      = TRUE,
     font_name = getOption("instead.font"),
     font_size = section_title_size,
-    h_align = "left",
-    v_align = "center"
+    h_align   = "left",
+    v_align   = "center"
   )
 
   # --- 2x2 contingency tables (start one row below section title) ---
@@ -712,15 +713,15 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
   # section title (optional)
   if (!is.null(section_title)) {
     wb <- instead::write_cell(
-      wb = wb,
-      sheet = sheet,
-      x = section_title,
-      rc = rc,
-      bold  = TRUE,
+      wb        = wb,
+      sheet     = sheet,
+      x         = section_title,
+      rc        = rc,
+      bold      = TRUE,
       font_name = getOption("instead.font"),
       font_size = section_title_size,
-      h_align = "left",
-      v_align = "center"
+      h_align   = "left",
+      v_align   = "center"
     )
     rc <- c(rc[1L] + 1L, rc[2L]) # tables start one row below the section title
   }
@@ -765,16 +766,16 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
     tot <- sum(suffix_tables[[i]]$wt_loading, na.rm = TRUE)
 
     wb <- instead::write_cell(
-      wb = wb,
-      sheet = sheet,
-      x = round(tot, 2),
-      rc = c(rng$end_cell[1L] + 1L, rng$start_cell[2L] + rn_off + wt_idx - 1L),
-      bold = TRUE,
+      wb        = wb,
+      sheet     = sheet,
+      x         = round(tot, 2),
+      rc        = c(rng$end_cell[1L] + 1L, rng$start_cell[2L] + rn_off + wt_idx - 1L),
+      bold      = TRUE,
       underline = TRUE,
       font_name = getOption("instead.font"),
       font_size = font_size,
-      h_align = "right",
-      v_align = "center"
+      h_align   = "right",
+      v_align   = "center"
     )
   }
 
@@ -797,11 +798,11 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
   if (is.null(suffix_tables)) return(wb)
 
   wb <- .save_loading_block_wb(
-    wb = wb,
-    sheet = sheet,
+    wb            = wb,
+    sheet         = sheet,
     suffix_tables = suffix_tables,
-    rc = rc_start,
-    row_spacer = row_spacer,
+    rc            = rc_start,
+    row_spacer    = row_spacer,
 
     section_title      = paste0("Mean Ratio - ", toupper(label)),
     section_title_size = section_title_size,
@@ -821,21 +822,25 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
 .save_object_block_wb <- function(wb, sheet, rr, mr_hos = NULL, mr_sur = NULL,
                                   mix, rc = c(2, 28)) {
   wb <- instead::write_cell(
-    wb, sheet,
-    x = "Reference",
-    rc = rc,
-    bold = TRUE,
+    wb        = wb,
+    sheet     = sheet,
+    x         = "Reference",
+    rc        = rc,
+    bold      = TRUE,
     font_name = getOption("instead.font"),
     font_size = 14,
-    h_align = "left",
-    v_align = "center"
+    h_align   = "left",
+    v_align   = "center"
   )
+
+  mix$decl <- as.numeric(as.character(mix$decl))
+  mix$excl <- as.numeric(as.character(mix$excl))
 
   data_list <- list()
   data_list[["Relative Risk"]] <- rr
   if (!is.null(mr_hos)) data_list[["Mean Ratio - HOS"]] <- mr_hos
   if (!is.null(mr_sur)) data_list[["Mean Ratio - SUR"]] <- mr_sur
-  if (!is.null(mix)) data_list[["ICIS Mix"]] <- mix
+  if (!is.null(mix))    data_list[["ICIS Mix"]] <- mix
 
   data_titles <- names(data_list)
 
@@ -856,7 +861,8 @@ save_rr_plans_xlsx <- function(cohort, icis, plans,
       rate0 = "0.00", rate1 = "0.00",
       mr = "0.00", mr_lower = "0.00", mr_upper = "0.00",
       p_value = "0.00",
-      decl = "0", excl = "0"
+      decl = "0", excl = "0", n = "#,##0", nsum = "#,##0",
+      ratio = "0.00", wt = "0.00"
     )
   )
 }
