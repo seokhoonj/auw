@@ -44,6 +44,53 @@ add_age_band <- function(df, age_var, interval = 5, right = FALSE,
                  col_nm = col_nm, cutoff = cutoff, label_style = label_style)
 }
 
+#' Summarise age-band labels to an overall range
+#'
+#' Collapse age-band labels (e.g. `"30-39"`, `"40-49"`, `"-9"`, `"20-"`)
+#' into a single range label such as `"30-79"`, `"-79"`, or `"30-"`.
+#'
+#' This function assumes labels follow the format produced by
+#' `add_age_band()`:
+#' - `"a-b"` : closed band
+#' - `"-b"`  : open start
+#' - `"a-"`  : open end
+#'
+#' @param x A character vector or factor/ordered factor of age-band labels.
+#'
+#' @return A length-1 character string representing the overall range.
+#' @export
+get_age_band_range <- function(x) {
+
+  if (is.factor(x) || is.ordered(x))
+    x <- as.character(x)
+
+  x <- x[!is.na(x) & nzchar(x)]
+  if (!length(x))
+    return(NA_character_)
+
+  parts <- strsplit(x, "-", fixed = TRUE)
+
+  starts <- vapply(parts, `[`, "", 1L)
+  ends   <- vapply(parts, `[`, "", 2L)
+
+  lo <- suppressWarnings(min(as.integer(starts[starts != ""]), na.rm = TRUE))
+  hi <- suppressWarnings(max(as.integer(ends[ends != ""]),   na.rm = TRUE))
+
+  has_open_start <- any(starts == "")
+  has_open_end   <- any(ends == "")
+
+  if (has_open_start && !has_open_end)
+    return(paste0("-", hi))
+
+  if (!has_open_start && has_open_end)
+    return(paste0(lo, "-"))
+
+  if (has_open_start && has_open_end)
+    return(paste0("-", hi))
+
+  paste0(lo, "-", hi)
+}
+
 melt_kcd <- function(df, kcd_cols) {
   instead::assert_class(df, "data.frame")
 

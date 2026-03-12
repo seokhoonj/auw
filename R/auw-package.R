@@ -18,11 +18,15 @@
 #' @importFrom data.table `:=` `.SD` `%chin%` address copy frank melt set
 #'   setcolorder setnames setorder setorderv uniqueN
 #' @importFrom grDevices rainbow
-#' @importFrom instead add_mon assert_class capture_names del_pattern draw_line
-#'   ensure_dt_env get_pattern has_cols has_ptr longer match_cols paste_cols
-#'   paste_str paste_uni_str replace_na_with_empty replace_na_with_zero
-#'   replace_cols_in_mat rm_cols rotate seq_list set_band set_dt set_tibble
-#'   unilen zeros
+#' @importFrom instead add_mon assert_class capture_names check_col_spec
+#'   check_file_overwrite check_file_recreate check_sheet_names create_style
+#'   del_pattern draw_line drop_null ensure_dt_env get_next_cell_down
+#'   get_next_cell_right get_pattern has_cols has_ptr intersect_cols longer
+#'   match_cols msg_rule msg_step msg_done paste_cols paste_str paste_uni_str
+#'   reorder_sheets replace_na_with_empty replace_na_with_zero
+#'   replace_cols_in_mat rm_cols rotate save_data_wb save_plot_wb seq_list
+#'   set_band set_col_map set_dt set_tibble unilen write_cell write_formula
+#'   zeros
 #' @importFrom openxlsx createWorkbook saveWorkbook
 #' @importFrom rlang .data as_name enquo enquos ensym ensyms has_length list2 syms
 #' @importFrom stats binom.test fisher.test formula median pnorm qnorm

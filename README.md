@@ -82,7 +82,7 @@ ir_data <- auw::summarise_id_with_kcd_ir(
 )
 
 # 2) Relative risk / odds ratio
-ir <- summary(ir)
+ir <- summary(ir_data)
 rr <- auw::summarise_rr(ir, decl_vs = c("0", "1"))
 
 # 3) Visualisation

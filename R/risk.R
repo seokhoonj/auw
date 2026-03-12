@@ -229,7 +229,7 @@ comp_risk_plot <- function(risk_info, x, y,
       sprintf("%.2f", x)
     }}) +
     ggshort::scale_color_gender() +
-    ggplot2::facet_wrap("~ gender", scales = scales) +
+    ggplot2::facet_wrap(~ gender, scales = scales) +
     ggplot2::theme(legend.box = "horizontal") +
     ggshort::switch_theme(theme = theme)
 
@@ -242,11 +242,13 @@ comp_risk_plot <- function(risk_info, x, y,
   ) +
     ggshort::geom_hline1() +
     ggshort::stat_mean_hline() +
-    ggplot2::scale_x_continuous(n.breaks = floor(instead::unilen(data_ratio$age) / age_unit)) +
+    ggplot2::scale_x_continuous(
+      n.breaks = floor(instead::unilen(data_ratio$age) / age_unit)
+    ) +
     scale_y_fun(n.breaks = floor(unilen(data_ratio$age)/age_unit)) +
     ggshort::scale_color_gender() +
     ggplot2::ylab("ratio") +
-    ggplot2::facet_wrap("~ risk") +
+    ggplot2::facet_wrap(~ risk) +
     ggshort::switch_theme(theme = theme)
 
   legend <- ggshort::get_legend(p1)

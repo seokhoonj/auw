@@ -2,24 +2,17 @@
 % Please edit documentation in R/relative-risk.R
 \name{summarise_rr}
 \alias{summarise_rr}
-\alias{summarise_rr.ir}
-\alias{summarise_rr.ir.data}
-\title{Summarise relative risk from IR objects}
+\alias{summarise_rr.id_data}
+\title{Summarise relative risk from \code{id_data} objects}
 \usage{
 summarise_rr(x, ...)
 
-\method{summarise_rr}{ir}(x, decl_vs = c("0", "1"), conf.level = 0.95, ...)
-
-\method{summarise_rr}{ir.data}(x, decl_vs = c("0", "1"), conf.level = 0.95, ...)
+\method{summarise_rr}{id_data}(x, decl_vs = c("0", "1"), conf.level = 0.95, ...)
 }
 \arguments{
-\item{x}{An \code{ir} or \code{ir.data} object.}
+\item{x}{An \code{id_data} object.}
 
 \item{...}{Passed to class-specific methods.}
-
-\item{decl_vs}{Character vector of two declaration levels to compare (default \code{c("0","1")}).}
-
-\item{conf.level}{Confidence level for intervals (default \code{0.95}).}
 }
 \value{
 A data frame (same base class as the input's restored table) with
@@ -36,13 +29,13 @@ prepended class \code{"rr"}. Columns include:
 Attributes:
 \itemize{
 \item \code{attr(x, "decl")}, \code{attr(x, "excl")}, \code{attr(x, "claim")},
-\item \code{attr(x, "cmatrix")}: a 2×2×K contingency array with dimnames
+\item \code{attr(x, "ctable")}: a 2×2×K contingency array with dimnames
 \code{c("exp+","exp-")}, \code{c("out+","out-")}, and per-stratum labels.
 }
 }
 \description{
 Compute relative risk (RR) and odds ratio (OR) with confidence intervals
-from \code{ir} / \code{ir.data} objects by comparing two declaration levels.
+from \code{id_data} objects by comparing two declaration levels.
 }
 \details{
 Internally, counts are reshaped into 2×2 contingency tables per stratum,
@@ -52,10 +45,10 @@ declaration/exclusion/claim patterns and the contingency array.
 }
 \examples{
 \dontrun{
-# x: an 'ir' object created upstream
+# x: an 'id_data' object created upstream
 out <- summarise_rr(x, decl_vs = c("0","1"), conf.level = 0.95)
 head(out)
-attr(out, "cmatrix")
+attr(out, "ctable")
 }
 
 }

@@ -41,13 +41,13 @@ the output column name.}
 }
 \value{
 An object of the same base class as \code{cohort} with prepended class
-\code{"ir.data"}. Contains one row per ID(+group) and 0/1 KCD flag columns.
+\code{"id_data"}. Contains one row per ID(+group) and 0/1 KCD flag columns.
 }
 \description{
 Starting from an \emph{episode-level} cohort (multiple rows per ID with
 \verb{[from,to]} and \code{kcd}), produce an \strong{ID-level summary table} with
 0/1 flag columns for each specified KCD window relative to \code{uw_date}.
-Internally converts to data.table (via \code{\link[=ensure_dt_env]{ensure_dt_env()}}) for
+Internally converts to data.table (via \code{\link[instead:ensure_dt_env]{instead::ensure_dt_env()}}) for
 efficiency, then restores the result and attached summaries to the
 original class of \code{cohort} (data.frame / tibble / data.table).
 }
@@ -63,7 +63,7 @@ original class of \code{cohort} (data.frame / tibble / data.table).
 \item \code{attr(x, "summary.N")}: deeper summaries by nested groupings
 }
 \item The main result is restored to the original class of \code{cohort} and prepended
-with S3 class \code{"ir.data"}.
+with S3 class \code{"id_data"}.
 }
 }
 \examples{
@@ -97,5 +97,5 @@ res2 <- summarise_id_with_kcd(
 
 }
 \seealso{
-\code{\link[=subset_cohort_by_id_with_kcd]{subset_cohort_by_id_with_kcd()}}, \code{\link[instead:ensure_dt_env]{instead::ensure_dt_env()}}, \code{\link[instead:capture_names]{instead::capture_names()}}
+\code{\link[=subset_cohort_by_id_with_kcd]{subset_cohort_by_id_with_kcd()}}
 }

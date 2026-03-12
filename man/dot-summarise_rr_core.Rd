@@ -7,19 +7,32 @@
 .summarise_rr_core(x, decl_vs = c("0", "1"), conf.level = 0.95)
 }
 \arguments{
-\item{x}{An \code{ir} object (for \code{ir.data}, see methods below).}
+\item{x}{An \code{id_data} object. The function internally uses the incidence-rate
+summary table stored at \code{attr(x, "summary")} (class \code{"ir"}), which must
+contain at least \code{decl}, \code{excl}, \code{claim}, \code{n}, \code{nsum}, and \code{ratio}.}
 
-\item{decl_vs}{Character vector of length 2 giving the declaration
-levels to compare (e.g., \code{c("0","1")}).}
+\item{decl_vs}{Character vector of length 2 giving the declaration levels
+to compare (e.g., \code{c("0", "1")}).}
 
 \item{conf.level}{Confidence level for intervals (default \code{0.95}).}
 }
 \value{
-See \code{\link[=summarise_rr]{summarise_rr()}} for columns and attributes. Returns an object
-with class \code{"rr"}.
+A restored data frame with prepended class \code{"rr"}. See \code{\link[=summarise_rr]{summarise_rr()}}
+for output columns and attributes.
 }
 \description{
-Compute RR/OR and their confidence intervals from an \code{ir} object.
-This is the internal engine used by S3 methods.
+Compute RR/OR and their confidence intervals from an \code{id_data} object.
+This is the internal engine used by \code{summarise_rr.id_data()}.
+}
+\details{
+The function filters to \code{excl == 0} and \code{claim == 1} on the \code{"ir"} summary,
+reshapes counts into 2×2 contingency tables per stratum, then computes:
+\itemize{
+\item RR with Wald-type confidence intervals,
+\item OR with Fisher exact test confidence intervals and p-values.
+}
+
+A per-stratum list of 2×2 contingency tables (with binomial CIs by row) is
+attached as \code{attr(result, "ctable")}.
 }
 \keyword{internal}
